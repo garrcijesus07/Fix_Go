@@ -1,19 +1,20 @@
 import { Link } from "react-router-dom";
 
+import "../styles/TallerCard.css";
+
 function TallerCard({ taller }) {
 
     return (
-        <div
-            style={{
-                border: "1px solid #ccc",
-                padding: "15px",
-                marginBottom: "15px",
-                borderRadius: "10px"
-            }}
-        >
-            <h2>{taller.nombre}</h2>
 
-            <p>{taller.descripcion}</p>
+        <div className="taller-card">
+
+            <h2>
+                {taller.nombre}
+            </h2>
+
+            <p>
+                {taller.descripcion}
+            </p>
 
             <p>
                 📍 {taller.direccion}
@@ -24,14 +25,20 @@ function TallerCard({ taller }) {
             </p>
 
             <Link
+                className="taller-card-link"
                 to={`/cliente/taller/${taller.id}`}
             >
-                <button>
+
+                <button
+                    className="taller-card-btn"
+                >
                     Ver Perfil
                 </button>
+
             </Link>
 
         </div>
+
     );
 
 }

@@ -14,6 +14,8 @@ import TallerDashboard from "./pages/TallerDashboard";
 import PerfilTaller from "./pages/PerfilTaller";
 import MisVehiculos from "./pages/MisVehiculos";
 import NuevoVehiculo from "./pages/NuevoVehiculo";
+import PerfilCliente from "./pages/PerfilCliente";
+import Citas from "./pages/Citas";
 
 function App() {
   return (
@@ -64,6 +66,16 @@ function App() {
         <Route
           path="/cliente/vehiculos/nuevo"
           element={<NuevoVehiculo />}
+        />
+
+        <Route 
+          path="/cliente/citas" 
+          element={<Citas />} 
+        />
+
+        <Route 
+        path="/cliente/perfil" 
+        element={<PerfilCliente />} 
         />
 
       </Routes>

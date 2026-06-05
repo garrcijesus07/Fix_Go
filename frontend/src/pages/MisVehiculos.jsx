@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 
+import "../styles/MisVehiculos.css";
+
 function MisVehiculos() {
 
     const [vehiculos, setVehiculos] = useState([]);
@@ -38,55 +40,90 @@ function MisVehiculos() {
 
     return (
 
-        <div style={{ padding: "20px" }}>
+        <div className="vehiculos-container">
 
-            <h1>Mis Vehículos</h1>
+            <div className="vehiculos-header">
 
-            <Link to="/cliente/vehiculos/nuevo">
+                <h1 className="vehiculos-title">
+                    🚗 Mis Vehículos
+                </h1>
 
-                <button>
-                    Agregar Vehículo
-                </button>
+                <Link
+                    to="/cliente/vehiculos/nuevo"
+                >
+                    <button
+                        className="agregar-vehiculo-btn"
+                    >
+                        + Agregar
+                    </button>
+                </Link>
 
-            </Link>
-
-            <hr />
+            </div>
 
             {
-                vehiculos.map((vehiculo) => (
+                vehiculos.length === 0 ? (
 
-                    <div
-                        key={vehiculo.id}
-                        style={{
-                            border: "1px solid gray",
-                            padding: "10px",
-                            marginBottom: "10px"
-                        }}
-                    >
+                    <p className="empty-message">
+                        No tienes vehículos registrados.
+                    </p>
 
-                        <h3>
-                            {vehiculo.marca}
-                            {" "}
-                            {vehiculo.modelo}
-                        </h3>
+                ) : (
 
-                        <p>
-                            Año: {vehiculo.anio}
-                        </p>
+                    <div className="vehiculos-grid">
 
-                        <p>
-                            Placas: {vehiculo.placas}
-                        </p>
+                        {
+                            vehiculos.map((vehiculo) => (
 
-                        <p>
-                            Color: {vehiculo.color}
-                        </p>
+                                <div
+                                    key={vehiculo.id}
+                                    className="vehiculo-card"
+                                >
+
+                                    <h3>
+                                        {vehiculo.marca} {vehiculo.modelo}
+                                    </h3>
+
+                                    <p>
+                                        📅 Año: {vehiculo.anio}
+                                    </p>
+
+                                    <p>
+                                        🚘 Placas: {vehiculo.placas}
+                                    </p>
+
+                                    <p>
+                                        🎨 Color: {vehiculo.color}
+                                    </p>
+
+                                </div>
+
+                            ))
+                        }
 
                     </div>
 
-                ))
+                )
             }
 
+            <div className="bottom-nav">
+
+                <Link to="/cliente">
+                    <button>🏠</button>
+                </Link>
+
+                <Link to="/cliente/vehiculos">
+                    <button>🚗</button>
+                </Link>
+
+                <Link to="/cliente/citas">
+                    <button>📅</button>
+                </Link>
+
+                <Link to="/cliente/perfil">
+                    <button>👤</button>
+                </Link>
+
+            </div>
         </div>
 
     );

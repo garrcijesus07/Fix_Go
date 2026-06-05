@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "../styles/Login.css";
 
 function Login() {
 
@@ -67,42 +68,54 @@ function Login() {
 
     return (
 
-        <div>
-            <h1>Iniciar Sesión</h1>
+        <div className="login-container">
 
-            <form onSubmit={login}>
+            <div className="login-card">
 
-                <input
-                    type="email"
-                    placeholder="Correo"
-                    value={correo}
-                    onChange={(e) =>
-                        setCorreo(e.target.value)
-                    }
-                />
+                <div className="logo-section">
+                    <h1>Fix-Go</h1>
+                    <p>Tu taller de confianza</p>
+                </div>
 
-                <br /><br />
+                <h2>Iniciar Sesión</h2>
 
-                <input
-                    type="password"
-                    placeholder="Contraseña"
-                    value={password}
-                    onChange={(e) =>
-                        setPassword(e.target.value)
-                    }
-                />
+                <form onSubmit={login}>
 
-                <br /><br />
+                    <input
+                        type="email"
+                        placeholder="Correo electrónico"
+                        value={correo}
+                        onChange={(e) =>
+                            setCorreo(e.target.value)
+                        }
+                        required
+                    />
 
-                <button type="submit">
-                    Ingresar
-                </button>
-                <p>
-                    ¿No tienes cuenta?
-                    <a href="/register"> Registrarse</a>
+                    <input
+                        type="password"
+                        placeholder="Contraseña"
+                        value={password}
+                        onChange={(e) =>
+                            setPassword(e.target.value)
+                        }
+                        required
+                    />
+
+                    <button type="submit">
+                        Ingresar
+                    </button>
+
+                </form>
+
+                <p
+                    className="register-link"
+                    onClick={() => navigate("/register")}
+                >
+                    ¿No tienes cuenta? Regístrate
                 </p>
 
-            </form>
+            </div>
+
         </div>
 
     );

@@ -1,0 +1,115 @@
+.nuevo-vehiculo-container {
+
+    min-height: 100vh;
+
+    background: #f4f6f9;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+
+}
+
+.nuevo-vehiculo-card {
+
+    width: 100%;
+
+    max-width: 500px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 35px;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+
+}
+
+.nuevo-vehiculo-card h1 {
+
+    color: #1f3c88;
+
+    text-align: center;
+
+    margin-bottom: 25px;
+
+}
+
+.nuevo-vehiculo-form {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+
+}
+
+.nuevo-vehiculo-form input {
+
+    padding: 14px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+
+}
+
+.guardar-btn {
+
+    background: #00b894;
+
+    color: white;
+
+    border: none;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+}
+
+.guardar-btn:hover {
+
+    background: #00a383;
+
+}
+
+.cancelar-btn {
+
+    background: #e74c3c;
+
+    color: white;
+
+    border: none;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+}
+
+.cancelar-btn:hover {
+
+    background: #c0392b;
+
+}

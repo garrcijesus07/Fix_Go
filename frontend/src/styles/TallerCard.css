@@ -1,0 +1,73 @@
+.taller-card {
+
+    background: white;
+
+    border-radius: 15px;
+
+    padding: 20px;
+
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+
+    transition: all 0.3s ease;
+
+}
+
+.taller-card:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+
+}
+
+.taller-card h2 {
+
+    color: #1f3c88;
+
+    margin-bottom: 10px;
+
+}
+
+.taller-card p {
+
+    color: #666;
+
+    margin-bottom: 8px;
+
+}
+
+.taller-card-btn {
+
+    width: 100%;
+
+    margin-top: 15px;
+
+    background: #00b894;
+
+    color: white;
+
+    border: none;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+}
+
+.taller-card-btn:hover {
+
+    background: #00a383;
+
+}
+
+.taller-card-link {
+
+    text-decoration: none;
+
+}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "../styles/NuevoVehiculo.css";
 
 function NuevoVehiculo() {
 
@@ -47,82 +48,104 @@ function NuevoVehiculo() {
 
     return (
 
-        <div style={{ padding: "20px" }}>
+        <div className="nuevo-vehiculo-container">
 
-            <h1>Registrar Vehículo</h1>
+            <div className="nuevo-vehiculo-card">
 
-            <form onSubmit={guardarVehiculo}>
+                <h1>
+                    🚗 Registrar Vehículo
+                </h1>
 
-                <input
-                    placeholder="Marca"
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            marca: e.target.value
-                        })
-                    }
-                />
+                <form
+                    className="nuevo-vehiculo-form"
+                    onSubmit={guardarVehiculo}
+                >
 
-                <br /><br />
+                    <input
+                        placeholder="Marca"
+                        value={form.marca}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                marca: e.target.value
+                            })
+                        }
+                        required
+                    />
 
-                <input
-                    placeholder="Modelo"
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            modelo: e.target.value
-                        })
-                    }
-                />
+                    <input
+                        placeholder="Modelo"
+                        value={form.modelo}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                modelo: e.target.value
+                            })
+                        }
+                        required
+                    />
 
-                <br /><br />
+                    <input
+                        type="number"
+                        placeholder="Año"
+                        value={form.anio}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                anio: e.target.value
+                            })
+                        }
+                        required
+                    />
 
-                <input
-                    placeholder="Año"
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            anio: e.target.value
-                        })
-                    }
-                />
+                    <input
+                        placeholder="Placas"
+                        value={form.placas}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                placas: e.target.value
+                            })
+                        }
+                        required
+                    />
 
-                <br /><br />
+                    <input
+                        placeholder="Color"
+                        value={form.color}
+                        onChange={(e) =>
+                            setForm({
+                                ...form,
+                                color: e.target.value
+                            })
+                        }
+                        required
+                    />
 
-                <input
-                    placeholder="Placas"
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            placas: e.target.value
-                        })
-                    }
-                />
+                    <button
+                        type="submit"
+                        className="guardar-btn"
+                    >
+                        Guardar Vehículo
+                    </button>
 
-                <br /><br />
+                    <button
+                        type="button"
+                        className="cancelar-btn"
+                        onClick={() =>
+                            navigate("/cliente/vehiculos")
+                        }
+                    >
+                        Cancelar
+                    </button>
 
-                <input
-                    placeholder="Color"
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            color: e.target.value
-                        })
-                    }
-                />
+                </form>
 
-                <br /><br />
-
-                <button type="submit">
-                    Guardar Vehículo
-                </button>
-
-            </form>
+            </div>
 
         </div>
 
     );
-
 }
 
 export default NuevoVehiculo;

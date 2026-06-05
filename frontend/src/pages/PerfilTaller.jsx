@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import api from "../services/api";
+import "../styles/PerfilTaller.css";
 
 function PerfilTaller() {
 
@@ -33,32 +34,80 @@ function PerfilTaller() {
     };
 
     if (!taller) {
-        return <h2>Cargando...</h2>;
+
+        return (
+            <div className="loading">
+                Cargando taller...
+            </div>
+        );
+
     }
 
     return (
 
-        <div style={{ padding: "20px" }}>
+        <div className="perfil-taller-container">
 
-            <h1>{taller.nombre}</h1>
+            <div className="taller-banner">
 
-            <p>
-                {taller.descripcion}
-            </p>
+                <h1>
+                    🔧 {taller.nombre}
+                </h1>
 
-            <p>
-                📍 {taller.direccion}
-            </p>
+            </div>
 
-            <p>
-                📞 {taller.telefono}
-            </p>
+            <div className="taller-card">
 
-            <hr />
+                <p>
+                    <span className="info-label">
+                        Descripción:
+                    </span>
+                    <br />
+                    {taller.descripcion}
+                </p>
 
-            <button>
-                Agendar Cita
-            </button>
+                <p>
+                    <span className="info-label">
+                        📍 Dirección:
+                    </span>
+                    <br />
+                    {taller.direccion}
+                </p>
+
+                <p>
+                    <span className="info-label">
+                        📞 Teléfono:
+                    </span>
+                    <br />
+                    {taller.telefono}
+                </p>
+
+                <button
+                    className="agendar-btn"
+                >
+                    📅 Agendar Cita
+                </button>
+
+            </div>
+
+            <div className="bottom-nav">
+
+                <Link to="/cliente">
+                    <button>🏠</button>
+                </Link>
+
+                <Link to="/cliente/vehiculos">
+                    <button>🚗</button>
+                </Link>
+
+                <Link to="/cliente/citas">
+                    <button>📅</button>
+                </Link>
+
+                <Link to="/cliente/perfil">
+                    <button>👤</button>
+                </Link>
+
+            </div>
 
         </div>
 

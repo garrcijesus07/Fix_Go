@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+
+import "../styles/Register.css";
 
 function Register() {
 
-    const [form, setForm] = useState({
-        nombre: "",
-        correo: "",
-        password: "",
-        rol: "cliente"
-    });
+    const navigate = useNavigate();
+
+    const [nombre, setNombre] = useState("");
+    const [correo, setCorreo] = useState("");
+    const [password, setPassword] = useState("");
+    const [rol, setRol] = useState("cliente");
 
     const registrar = async (e) => {
 
@@ -18,14 +21,21 @@ function Register() {
 
             await api.post(
                 "/auth/register",
-                form
+                {
+                    nombre,
+                    correo,
+                    password,
+                    rol
+                }
             );
 
-            alert("Usuario registrado");
+            alert("Usuario registrado correctamente");
+
+            navigate("/");
 
         } catch (error) {
 
-            alert("Error al registrar");
+            alert("Error al registrar usuario");
 
         }
 
@@ -33,82 +43,79 @@ function Register() {
 
     return (
 
-        <div>
+        <div className="register-container">
 
-            <h1>Registro</h1>
+            <div className="register-card">
 
-            <form onSubmit={registrar}>
+                <h1>Fix-Go</h1>
 
-                <input
-                    placeholder="Nombre"
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            nombre: e.target.value
-                        })
-                    }
-                />
+                <p>Crear cuenta</p>
 
-                <br /><br />
+                <form onSubmit={registrar}>
 
-                <input
-                    placeholder="Correo"
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            correo: e.target.value
-                        })
-                    }
-                />
+                    <input
+                        type="text"
+                        placeholder="Nombre"
+                        value={nombre}
+                        onChange={(e) =>
+                            setNombre(e.target.value)
+                        }
+                        required
+                    />
 
-                <br /><br />
+                    <input
+                        type="email"
+                        placeholder="Correo"
+                        value={correo}
+                        onChange={(e) =>
+                            setCorreo(e.target.value)
+                        }
+                        required
+                    />
 
-                <input
-                    type="password"
-                    placeholder="Contraseña"
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            password: e.target.value
-                        })
-                    }
-                />
+                    <input
+                        type="password"
+                        placeholder="Contraseña"
+                        value={password}
+                        onChange={(e) =>
+                            setPassword(e.target.value)
+                        }
+                        required
+                    />
 
-                <br /><br />
+                    <select
+                        value={rol}
+                        onChange={(e) =>
+                            setRol(e.target.value)
+                        }
+                    >
+                        <option value="cliente">
+                            Cliente
+                        </option>
 
-                <select
-                    onChange={(e) =>
-                        setForm({
-                            ...form,
-                            rol: e.target.value
-                        })
-                    }
+                        <option value="taller">
+                            Taller
+                        </option>
+
+                        <option value="mecanico">
+                            Mecánico
+                        </option>
+                    </select>
+
+                    <button type="submit">
+                        Registrarse
+                    </button>
+
+                </form>
+
+                <p
+                    className="login-link"
+                    onClick={() => navigate("/")}
                 >
-                    <option value="cliente">
-                        Cliente
-                    </option>
-
-                    <option value="mecanico">
-                        Mecánico
-                    </option>
-
-                    <option value="taller">
-                        Taller
-                    </option>
-                </select>
-
-                <br /><br />
-
-                <button type="submit">
-                    Registrarse
-                </button>
-
-                <p>
-                    ¿Ya tienes cuenta?
-                    <a href="/"> Iniciar sesión</a>
+                    ¿Ya tienes cuenta? Inicia sesión
                 </p>
 
-            </form>
+            </div>
 
         </div>
 

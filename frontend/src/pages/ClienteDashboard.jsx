@@ -3,6 +3,8 @@ import api from "../services/api";
 import TallerCard from "../components/TallerCard";
 import { Link } from "react-router-dom";
 
+import "../styles/ClienteDashboard.css";
+
 function ClienteDashboard() {
 
     const [talleres, setTalleres] = useState([]);
@@ -33,32 +35,104 @@ function ClienteDashboard() {
 
     return (
 
+        <div className="cliente-container">
 
-        <div style={{ padding: "20px" }}>
+            <div className="navbar">
 
-            <Link to="/cliente/vehiculos">
+                <div className="navbar-top">
 
-                <button>
-                    Mis Vehículos
-                </button>
+                    <h2>
+                        Fix-Go
+                    </h2>
 
-            </Link>
+                    <Link
+                        to="/perfil"
+                        style={{
+                            color: "white",
+                            textDecoration: "none",
+                            fontSize: "24px"
+                        }}
+                    >
+                        👤
+                    </Link>
 
-            <h1>
-                Talleres Disponibles
-            </h1>
+                </div>
 
-            {
-                talleres.map((taller) => (
+                <p>
+                    Bienvenido nuevamente
+                </p>
 
-                    <TallerCard
-                        key={taller.id}
-                        taller={taller}
-                    />
+            </div>
 
-                ))
-            }
+            <div className="dashboard-content">
 
+                <input
+                    className="search-box"
+                    type="text"
+                    placeholder="🔍 Buscar talleres..."
+                />
+
+                <Link
+                    to="/cliente/vehiculos"
+                    style={{ textDecoration: "none" }}
+                >
+
+                    <button className="vehiculos-btn">
+                        🚗 Mis Vehículos
+                    </button>
+
+                </Link>
+                <div className="welcome-card">
+
+                    <h3>
+                        🚗 Gestiona tus vehículos
+                    </h3>
+
+                    <p>
+                        Consulta citas, historial y estado de reparación.
+                    </p>
+
+                </div>
+                <h2 className="section-title">
+                    Talleres Disponibles
+                </h2>
+
+                <div className="card-grid">
+
+                    {
+                        talleres.map((taller) => (
+
+                            <TallerCard
+                                key={taller.id}
+                                taller={taller}
+                            />
+
+                        ))
+                    }
+
+                </div>
+
+            </div>
+
+            <div className="bottom-nav">
+
+                <Link to="/cliente">
+                    <button>🏠</button>
+                </Link>
+
+                <Link to="/cliente/vehiculos">
+                    <button>🚗</button>
+                </Link>
+
+                <Link to="/cliente/citas">
+                    <button>📅</button>
+                </Link>
+
+                <Link to="/cliente/perfil">
+                    <button>👤</button>
+                </Link>
+
+            </div>
         </div>
 
     );

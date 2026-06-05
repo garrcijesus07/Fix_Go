@@ -1,0 +1,164 @@
+.perfil-taller-container {
+
+    min-height: 100vh;
+
+    background: #f4f6f9;
+
+    padding: 20px;
+
+}
+
+.taller-banner {
+
+    background: linear-gradient(
+        135deg,
+        #1f3c88,
+        #2f56c0
+    );
+
+    color: white;
+
+    padding: 35px;
+
+    border-radius: 20px;
+
+    margin-bottom: 20px;
+
+}
+
+.taller-banner h1 {
+
+    margin: 0;
+
+    font-size: 2rem;
+
+}
+
+.taller-card {
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+
+}
+
+.taller-card p {
+
+    margin-bottom: 15px;
+
+    color: #444;
+
+    font-size: 15px;
+
+}
+
+.info-label {
+
+    font-weight: bold;
+
+    color: #1f3c88;
+
+}
+
+.agendar-btn {
+
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #00b894;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+.agendar-btn:hover {
+
+    background: #00a383;
+
+}
+
+.loading {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 22px;
+
+    color: #1f3c88;
+
+}
+
+.bottom-nav {
+
+    position: fixed;
+
+    bottom: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    background: white;
+
+    display: flex;
+
+    justify-content: space-around;
+
+    padding: 15px;
+
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.08);
+
+}
+
+.bottom-nav button {
+
+    border: none;
+
+    background: none;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+}
+.bottom-nav a {
+
+    text-decoration: none;
+
+}
+
+.bottom-nav button {
+
+    border: none;
+
+    background: none;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    padding: 10px;
+
+}
