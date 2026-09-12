@@ -1,6 +1,9 @@
 const express = require('express');
 
 const verificarToken = require('../middleware/authMiddleware');
+const permitirRoles = require('../middleware/roleMiddleware');
+
+const soloTalleres = permitirRoles('taller');
 
 const router = express.Router();
 
@@ -18,9 +21,15 @@ router.get('/:id', obtenerTaller);
 router.post(
     '/',
     verificarToken,
+    soloTalleres,
     crearTaller
 );
 
-router.put('/:id', actualizarTaller);
+router.put(
+    '/:id',
+    verificarToken,
+    soloTalleres,
+    actualizarTaller
+);
 
 module.exports = router;

@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import "../styles/NuevoVehiculo.css";
 
 function NuevoVehiculo() {
 
     const navigate = useNavigate();
+    const { id } = useParams();
+    const editando = Boolean(id);
 
     const [form, setForm] = useState({
         marca: "",
@@ -15,14 +17,58 @@ function NuevoVehiculo() {
         color: ""
     });
 
+    useEffect(() => {
+
+        if (!editando) {
+            return;
+        }
+
+        const obtenerVehiculo = async () => {
+
+            try {
+
+                const response = await api.get(
+                    `/vehiculos/${id}`,
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${localStorage.getItem("token")}`
+                        }
+                    }
+                );
+
+                const { marca, modelo, anio, placas, color } = response.data;
+
+                setForm({ marca, modelo, anio, placas, color });
+
+            } catch (error) {
+
+                console.error(error);
+                alert(
+                    error.response?.data?.mensaje ||
+                    "Error al cargar el vehículo"
+                );
+                navigate("/cliente/vehiculos");
+
+            }
+
+        };
+
+        obtenerVehiculo();
+
+    }, [editando, id, navigate]);
+
     const guardarVehiculo = async (e) => {
 
         e.preventDefault();
 
         try {
 
-            await api.post(
-                "/vehiculos",
+            const metodo = editando ? api.put : api.post;
+            const url = editando ? `/vehiculos/${id}` : "/vehiculos";
+
+            await metodo(
+                url,
                 form,
                 {
                     headers: {
@@ -32,7 +78,11 @@ function NuevoVehiculo() {
                 }
             );
 
-            alert("Vehículo registrado");
+            alert(
+                editando
+                    ? "Vehículo actualizado"
+                    : "Vehículo registrado"
+            );
 
             navigate("/cliente/vehiculos");
 
@@ -40,7 +90,12 @@ function NuevoVehiculo() {
 
             console.error(error);
 
-            alert("Error al registrar");
+            alert(
+                error.response?.data?.mensaje ||
+                (editando
+                    ? "Error al actualizar"
+                    : "Error al registrar")
+            );
 
         }
 
@@ -53,7 +108,9 @@ function NuevoVehiculo() {
             <div className="nuevo-vehiculo-card">
 
                 <h1>
-                    🚗 Registrar Vehículo
+                    {editando
+                        ? "Editar Vehículo"
+                        : "Registrar Vehículo"}
                 </h1>
 
                 <form
@@ -126,7 +183,9 @@ function NuevoVehiculo() {
                         type="submit"
                         className="guardar-btn"
                     >
-                        Guardar Vehículo
+                        {editando
+                            ? "Guardar cambios"
+                            : "Guardar Vehículo"}
                     </button>
 
                     <button

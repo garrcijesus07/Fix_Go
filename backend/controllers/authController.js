@@ -5,6 +5,19 @@ const jwt = require('jsonwebtoken');
 exports.register = async (req, res) => {
 
     const { nombre, correo, password, rol } = req.body;
+    const rolesRegistroPublico = ['cliente', 'taller', 'mecanico'];
+
+    if (rol === 'administrador') {
+        return res.status(403).json({
+            mensaje: 'No esta permitido registrar administradores'
+        });
+    }
+
+    if (!rolesRegistroPublico.includes(rol)) {
+        return res.status(400).json({
+            mensaje: 'Rol no permitido para registro publico'
+        });
+    }
 
     try {
 

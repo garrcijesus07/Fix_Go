@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import useAuth from "../hooks/useAuth";
 import "../styles/Login.css";
 
 function Login() {
 
     const navigate = useNavigate();
+    const { login: guardarSesion } = useAuth();
 
     const [correo, setCorreo] = useState("");
     const [password, setPassword] = useState("");
@@ -26,15 +28,7 @@ function Login() {
 
             const data = response.data;
 
-            localStorage.setItem(
-                "token",
-                data.token
-            );
-
-            localStorage.setItem(
-                "rol",
-                data.rol
-            );
+            guardarSesion(data.token, data.rol);
 
             switch (data.rol) {
 
@@ -58,7 +52,7 @@ function Login() {
                     navigate("/");
             }
 
-        } catch (error) {
+        } catch {
 
             alert("Credenciales incorrectas");
 

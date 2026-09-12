@@ -162,3 +162,46 @@
     padding: 10px;
 
 }
+
+.vehiculo-actions {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 16px;
+
+}
+
+.editar-vehiculo-btn,
+.eliminar-vehiculo-btn {
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 10px 14px;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    text-decoration: none;
+
+}
+
+.editar-vehiculo-btn {
+
+    background: #1f3c88;
+
+}
+
+.eliminar-vehiculo-btn {
+
+    background: #e74c3c;
+
+}

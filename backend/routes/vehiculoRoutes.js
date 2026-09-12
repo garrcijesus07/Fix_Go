@@ -5,6 +5,11 @@ const router = express.Router();
 const verificarToken =
 require('../middleware/authMiddleware');
 
+const permitirRoles =
+require('../middleware/roleMiddleware');
+
+const soloClientes = permitirRoles('cliente');
+
 const {
     obtenerVehiculos,
     obtenerVehiculo,
@@ -13,14 +18,14 @@ const {
     eliminarVehiculo
 } = require('../controllers/vehiculoController');
 
-router.get('/', verificarToken, obtenerVehiculos);
+router.get('/', verificarToken, soloClientes, obtenerVehiculos);
 
-router.get('/:id', verificarToken, obtenerVehiculo);
+router.get('/:id', verificarToken, soloClientes, obtenerVehiculo);
 
-router.post('/', verificarToken, crearVehiculo);
+router.post('/', verificarToken, soloClientes, crearVehiculo);
 
-router.put('/:id', verificarToken, actualizarVehiculo);
+router.put('/:id', verificarToken, soloClientes, actualizarVehiculo);
 
-router.delete('/:id', verificarToken, eliminarVehiculo);
+router.delete('/:id', verificarToken, soloClientes, eliminarVehiculo);
 
 module.exports = router;

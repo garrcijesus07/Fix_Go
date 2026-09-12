@@ -10,16 +10,48 @@ function MisVehiculos() {
 
     useEffect(() => {
 
+        const obtenerVehiculos = async () => {
+
+            try {
+
+                const response = await api.get(
+                    "/vehiculos",
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${localStorage.getItem("token")}`
+                        }
+                    }
+                );
+
+                setVehiculos(response.data);
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+        };
+
         obtenerVehiculos();
 
     }, []);
 
-    const obtenerVehiculos = async () => {
+    const eliminarVehiculo = async (id) => {
+
+        const confirmar = window.confirm(
+            "¿Deseas eliminar este vehículo?"
+        );
+
+        if (!confirmar) {
+            return;
+        }
 
         try {
 
-            const response = await api.get(
-                "/vehiculos",
+            await api.delete(
+                `/vehiculos/${id}`,
                 {
                     headers: {
                         Authorization:
@@ -28,11 +60,19 @@ function MisVehiculos() {
                 }
             );
 
-            setVehiculos(response.data);
+            setVehiculos((vehiculosActuales) =>
+                vehiculosActuales.filter((vehiculo) =>
+                    vehiculo.id !== id
+                )
+            );
 
         } catch (error) {
 
             console.error(error);
+            alert(
+                error.response?.data?.mensaje ||
+                "Error al eliminar el vehículo"
+            );
 
         }
 
@@ -94,6 +134,27 @@ function MisVehiculos() {
                                     <p>
                                         🎨 Color: {vehiculo.color}
                                     </p>
+
+                                    <div className="vehiculo-actions">
+
+                                        <Link
+                                            className="editar-vehiculo-btn"
+                                            to={`/cliente/vehiculos/${vehiculo.id}/editar`}
+                                        >
+                                            Editar
+                                        </Link>
+
+                                        <button
+                                            type="button"
+                                            className="eliminar-vehiculo-btn"
+                                            onClick={() =>
+                                                eliminarVehiculo(vehiculo.id)
+                                            }
+                                        >
+                                            Eliminar
+                                        </button>
+
+                                    </div>
 
                                 </div>
 

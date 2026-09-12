@@ -11,27 +11,27 @@ function PerfilTaller() {
 
     useEffect(() => {
 
+        const cargarTaller = async () => {
+
+            try {
+
+                const response = await api.get(
+                    `/talleres/${id}`
+                );
+
+                setTaller(response.data);
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+        };
+
         cargarTaller();
 
-    }, []);
-
-    const cargarTaller = async () => {
-
-        try {
-
-            const response = await api.get(
-                `/talleres/${id}`
-            );
-
-            setTaller(response.data);
-
-        } catch (error) {
-
-            console.error(error);
-
-        }
-
-    };
+    }, [id]);
 
     if (!taller) {
 

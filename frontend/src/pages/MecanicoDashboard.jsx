@@ -1,3 +1,10 @@
+import Navbar from "../components/Navbar";
+
 export default function MecanicoDashboard() {
-    return <h1>Panel Mecánico</h1>;
+    return (
+        <>
+            <Navbar />
+            <h1>Panel Mecánico</h1>
+        </>
+    );
 }

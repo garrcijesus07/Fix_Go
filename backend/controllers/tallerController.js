@@ -51,13 +51,14 @@ exports.obtenerTaller = (req, res) => {
 exports.crearTaller = (req, res) => {
 
     const {
-        usuario_id,
         nombre,
         descripcion,
         direccion,
         telefono,
         imagen
     } = req.body;
+
+    const usuario_id = req.usuario.id;
 
     const sql = `
         INSERT INTO talleres
@@ -85,7 +86,10 @@ exports.crearTaller = (req, res) => {
         (err, result) => {
 
             if (err) {
-                return res.status(500).json(err);
+                console.error('Error al crear el taller:', err);
+                return res.status(500).json({
+                    mensaje: 'Error al crear el taller'
+                });
             }
 
             res.status(201).json({
@@ -101,6 +105,7 @@ exports.crearTaller = (req, res) => {
 exports.actualizarTaller = (req, res) => {
 
     const { id } = req.params;
+    const usuario_id = req.usuario.id;
 
     const {
         nombre,
@@ -118,7 +123,7 @@ exports.actualizarTaller = (req, res) => {
             direccion = ?,
             telefono = ?,
             imagen = ?
-        WHERE id = ?
+        WHERE id = ? AND usuario_id = ?
     `;
 
     db.query(
@@ -129,12 +134,22 @@ exports.actualizarTaller = (req, res) => {
             direccion,
             telefono,
             imagen,
-            id
+            id,
+            usuario_id
         ],
         (err, result) => {
 
             if (err) {
-                return res.status(500).json(err);
+                console.error('Error al actualizar el taller:', err);
+                return res.status(500).json({
+                    mensaje: 'Error al actualizar el taller'
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    mensaje: 'Taller no encontrado'
+                });
             }
 
             res.json({

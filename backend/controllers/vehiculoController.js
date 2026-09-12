@@ -15,7 +15,10 @@ exports.obtenerVehiculos = (req, res) => {
         (err, result) => {
 
             if (err) {
-                return res.status(500).json(err);
+                console.error('Error al obtener vehiculos:', err);
+                return res.status(500).json({
+                    mensaje: 'Error al obtener los vehiculos'
+                });
             }
 
             res.json(result);
@@ -29,14 +32,18 @@ exports.obtenerVehiculos = (req, res) => {
 exports.obtenerVehiculo = (req, res) => {
 
     const { id } = req.params;
+    const cliente_id = req.usuario.id;
 
     db.query(
-        'SELECT * FROM vehiculos WHERE id = ?',
-        [id],
+        'SELECT * FROM vehiculos WHERE id = ? AND cliente_id = ?',
+        [id, cliente_id],
         (err, result) => {
 
             if (err) {
-                return res.status(500).json(err);
+                console.error('Error al obtener el vehiculo:', err);
+                return res.status(500).json({
+                    mensaje: 'Error al obtener el vehiculo'
+                });
             }
 
             if (result.length === 0) {
@@ -93,7 +100,10 @@ exports.crearVehiculo = (req, res) => {
         (err, result) => {
 
             if (err) {
-                return res.status(500).json(err);
+                console.error('Error al crear el vehiculo:', err);
+                return res.status(500).json({
+                    mensaje: 'Error al registrar el vehiculo'
+                });
             }
 
             res.status(201).json({
@@ -109,6 +119,7 @@ exports.crearVehiculo = (req, res) => {
 exports.actualizarVehiculo = (req, res) => {
 
     const { id } = req.params;
+    const cliente_id = req.usuario.id;
 
     const {
         marca,
@@ -126,7 +137,7 @@ exports.actualizarVehiculo = (req, res) => {
             anio = ?,
             placas = ?,
             color = ?
-        WHERE id = ?
+        WHERE id = ? AND cliente_id = ?
     `;
 
     db.query(
@@ -137,12 +148,22 @@ exports.actualizarVehiculo = (req, res) => {
             anio,
             placas,
             color,
-            id
+            id,
+            cliente_id
         ],
         (err, result) => {
 
             if (err) {
-                return res.status(500).json(err);
+                console.error('Error al actualizar el vehiculo:', err);
+                return res.status(500).json({
+                    mensaje: 'Error al actualizar el vehiculo'
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    mensaje: 'Vehiculo no encontrado'
+                });
             }
 
             res.json({
@@ -158,14 +179,24 @@ exports.actualizarVehiculo = (req, res) => {
 exports.eliminarVehiculo = (req, res) => {
 
     const { id } = req.params;
+    const cliente_id = req.usuario.id;
 
     db.query(
-        'DELETE FROM vehiculos WHERE id = ?',
-        [id],
+        'DELETE FROM vehiculos WHERE id = ? AND cliente_id = ?',
+        [id, cliente_id],
         (err, result) => {
 
             if (err) {
-                return res.status(500).json(err);
+                console.error('Error al eliminar el vehiculo:', err);
+                return res.status(500).json({
+                    mensaje: 'Error al eliminar el vehiculo'
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    mensaje: 'Vehiculo no encontrado'
+                });
             }
 
             res.json({

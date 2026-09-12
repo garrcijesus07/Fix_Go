@@ -1,0 +1,28 @@
+# Environment files and local secrets
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Dependencies and build output
+node_modules/
+dist/
+dist-ssr/
+backups/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local and temporary files
+*.local
+*.tmp
+*.temp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

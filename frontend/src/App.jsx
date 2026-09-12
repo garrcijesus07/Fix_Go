@@ -3,6 +3,7 @@ import {
   Routes,
   Route
 } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -33,50 +34,27 @@ function App() {
           element={<Register />}
         />
 
-        <Route
-          path="/admin"
-          element={<AdminDashboard />}
-        />
+        <Route element={<ProtectedRoute rolesPermitidos={["administrador"]} />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+        </Route>
 
-        <Route
-          path="/cliente"
-          element={<ClienteDashboard />}
-        />
+        <Route element={<ProtectedRoute rolesPermitidos={["taller"]} />}>
+          <Route path="/taller" element={<TallerDashboard />} />
+        </Route>
 
-        <Route
-          path="/mecanico"
-          element={<MecanicoDashboard />}
-        />
+        <Route element={<ProtectedRoute rolesPermitidos={["mecanico"]} />}>
+          <Route path="/mecanico" element={<MecanicoDashboard />} />
+        </Route>
 
-        <Route
-          path="/taller"
-          element={<TallerDashboard />}
-        />
-
-        <Route
-          path="/cliente/taller/:id"
-          element={<PerfilTaller />}
-        />
-
-        <Route
-          path="/cliente/vehiculos"
-          element={<MisVehiculos />}
-        />
-
-        <Route
-          path="/cliente/vehiculos/nuevo"
-          element={<NuevoVehiculo />}
-        />
-
-        <Route 
-          path="/cliente/citas" 
-          element={<Citas />} 
-        />
-
-        <Route 
-        path="/cliente/perfil" 
-        element={<PerfilCliente />} 
-        />
+        <Route element={<ProtectedRoute rolesPermitidos={["cliente"]} />}>
+          <Route path="/cliente" element={<ClienteDashboard />} />
+          <Route path="/cliente/taller/:id" element={<PerfilTaller />} />
+          <Route path="/cliente/vehiculos" element={<MisVehiculos />} />
+          <Route path="/cliente/vehiculos/nuevo" element={<NuevoVehiculo />} />
+          <Route path="/cliente/vehiculos/:id/editar" element={<NuevoVehiculo />} />
+          <Route path="/cliente/citas" element={<Citas />} />
+          <Route path="/cliente/perfil" element={<PerfilCliente />} />
+        </Route>
 
       </Routes>
 

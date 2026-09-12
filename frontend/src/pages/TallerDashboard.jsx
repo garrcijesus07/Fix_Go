@@ -1,3 +1,10 @@
+import Navbar from "../components/Navbar";
+
 export default function TallerDashboard() {
-    return <h1>Panel Taller</h1>;
+    return (
+        <>
+            <Navbar />
+            <h1>Panel Taller</h1>
+        </>
+    );
 }

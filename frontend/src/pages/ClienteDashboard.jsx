@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import TallerCard from "../components/TallerCard";
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 import "../styles/ClienteDashboard.css";
 
@@ -11,27 +12,27 @@ function ClienteDashboard() {
 
     useEffect(() => {
 
+        const obtenerTalleres = async () => {
+
+            try {
+
+                const response = await api.get(
+                    "/talleres"
+                );
+
+                setTalleres(response.data);
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+        };
+
         obtenerTalleres();
 
     }, []);
-
-    const obtenerTalleres = async () => {
-
-        try {
-
-            const response = await api.get(
-                "/talleres"
-            );
-
-            setTalleres(response.data);
-
-        } catch (error) {
-
-            console.error(error);
-
-        }
-
-    };
 
     return (
 
@@ -45,8 +46,10 @@ function ClienteDashboard() {
                         Fix-Go
                     </h2>
 
+                    <Navbar />
+
                     <Link
-                        to="/perfil"
+                        to="/cliente/perfil"
                         style={{
                             color: "white",
                             textDecoration: "none",

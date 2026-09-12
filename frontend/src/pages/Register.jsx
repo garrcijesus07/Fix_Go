@@ -33,7 +33,7 @@ function Register() {
 
             navigate("/");
 
-        } catch (error) {
+        } catch {
 
             alert("Error al registrar usuario");
 
