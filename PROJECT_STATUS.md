@@ -97,11 +97,68 @@ persistencia se comprobó directamente en MySQL.
 
 ### Citas
 
-- [ ] Crear cita
-- [ ] Consultar citas
+- [x] Crear cita mediante `POST /api/citas`
+- [x] Consultar citas propias mediante `GET /api/citas/mias`
+- [x] Diseño ampliado de citas definido
+- [x] Migración `001_expandir_citas_y_horarios_taller.sql` preparada y probada en QA
+- [x] Migración 001 aplicada y validada en `taller_mecanico`
+- [x] Columnas de tipo, descripción y duración activas en la base real
+- [x] `POST /api/citas` adaptado al modelo ampliado
+- [x] Tipos `diagnostico` y `reparacion` validados por el backend
+- [x] Duraciones de 60/120 minutos determinadas por el backend
+- [x] Conflictos por intervalos de taller y vehículo validados
+- [x] Creación transaccional con bloqueo de taller y vehículo
+- [x] `GET /api/citas/disponibilidad` implementado y validado
+- [x] Slots backend de 30 minutos según horario, tipo y citas activas
 - [ ] Cancelar cita
 - [ ] Modificar cita
 - [ ] Validar horarios
+
+La creación está restringida al rol `cliente`. `cliente_id` se obtiene del
+JWT, el vehículo debe pertenecer al usuario autenticado, el taller debe existir
+y la fecha debe ser válida y futura. Las citas se crean en estado `pendiente`
+con `mecanico_id` en `NULL`. El backend acepta `diagnostico` y `reparacion`,
+asigna respectivamente 60 y 120 minutos, y exige una descripción de hasta
+2,000 caracteres para reparación. Los campos de identidad, estado, mecánico y
+duración enviados por el cliente se ignoran.
+
+Los conflictos activos se validan por solapamiento real de intervalos tanto
+para el taller como para el vehículo. La creación usa una transacción y bloquea
+primero el taller y después el vehículo para reducir condiciones de carrera.
+Una prueba concurrente produjo una creación `201` y un conflicto `409`, con una
+sola cita activa. La capacidad temporal es una cita simultánea por taller.
+
+La disponibilidad backend consulta `horarios_taller`, genera candidatos cada
+30 minutos y aplica las duraciones de 60/120 minutos según el tipo. Las citas
+`pendiente` y `aceptada` eliminan slots mediante solapamiento real;
+`cancelada` y `finalizada` no bloquean. Un día sin horario devuelve un arreglo
+vacío y no se asume disponibilidad ilimitada. El cálculo informativo fue
+validado junto con `POST /api/citas`: el POST revalida dentro de su transacción
+y continúa siendo la autoridad final de la reserva. La integración de estos
+slots en el frontend aún está pendiente.
+
+El listado está restringido al rol `cliente` y filtra exclusivamente por el
+ID obtenido del JWT. Devuelve datos de la cita, taller y vehículo ordenados por
+fecha ascendente. El aislamiento entre dos clientes, los intentos de enviar un
+`cliente_id` ajeno y la respuesta `200 []` para clientes sin citas fueron
+validados con datos QA temporales, eliminados al terminar.
+
+El diseño ampliado contempla `tipo_cita`, `descripcion_falla`,
+`duracion_minutos` y la nueva tabla `horarios_taller`. La migración incremental
+fue probada primero en QA y después aplicada correctamente a `taller_mecanico`,
+con respaldo previo disponible en
+`backups/fix_go_mysql_pre_migracion_001_20260912_221500_UTC.sql`. El backfill
+asignó `diagnostico` y 60 minutos a las citas anteriores; `horarios_taller`
+quedó creada y vacía, sin inventar disponibilidad para talleres existentes.
+
+Los índices compuestos `idx_citas_taller_estado_fecha` e
+`idx_citas_vehiculo_estado_fecha` están activos. InnoDB sustituyó los índices
+simples redundantes de `taller_id` y `vehiculo_id`: las mismas columnas son el
+prefijo izquierdo de los índices compuestos, las foreign keys permanecen
+válidas y `EXPLAIN` confirma su uso. No es necesario recrear los índices
+simples. El `POST /api/citas` anterior fue validado de forma autenticada y
+continúa funcionando mediante los defaults. La lógica avanzada de tipo,
+duración, horarios y disponibilidad aún está pendiente.
 
 ### Perfil
 
@@ -115,9 +172,18 @@ persistencia se comprobó directamente en MySQL.
 - [ ] Perfil del taller
 - [ ] Editar información
 - [ ] Gestión de citas
-- [ ] Gestión de horarios
+- [x] Gestión backend del horario semanal general
+- [x] Consulta y reemplazo completo de horarios propios
 - [ ] Gestión de mecánicos
 - [ ] Historial de servicios
+
+El propietario puede consultar y reemplazar el horario semanal de cada uno de
+sus talleres mediante `GET /api/talleres/:id/horarios` y
+`PUT /api/talleres/:id/horarios`. Se permiten múltiples bloques y bloques
+adyacentes por día; se rechazan duplicados, intervalos inválidos y
+superposiciones. El reemplazo es transaccional, bloquea el taller y no afecta
+horarios ajenos. `horarios_taller` ya está preparada para el futuro cálculo de
+disponibilidad, que todavía no está implementado.
 
 ## Mecánico
 
@@ -174,8 +240,8 @@ Vehículos
  [x] Actualizar vehículo (probado)
  [x] Eliminar vehículo (probado)
 Citas
- Crear cita
- Obtener citas
+ [x] Crear cita (probado)
+ [x] Obtener citas propias del cliente (probado)
  Actualizar cita
  Cancelar cita
  Validar disponibilidad
@@ -270,6 +336,8 @@ Pendientes principales:
 - [x] Corregir `backend/base_de_datos.sql` sin ejecutar operaciones destructivas.
 - [x] Verificar el esquema real de MySQL antes de aplicar cambios.
 - [ ] Definir un sistema de migraciones para futuros cambios de esquema.
+- [x] Preparar y validar en QA la primera migración incremental del módulo de citas.
+- [x] Aplicar y validar la migración 001 de citas en la base real con respaldo previo.
 - [x] Implementar middleware de autorización por roles en el backend.
 - [x] Restringir las operaciones de vehículos al rol `cliente`.
 - [x] Proteger la escritura y la propiedad de talleres para el rol `taller`.

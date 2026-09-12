@@ -1,0 +1,92 @@
+.citas-container {
+  min-height: 100vh;
+  background: #f4f6f9;
+  padding: 20px;
+}
+
+.citas-header {
+  margin-bottom: 20px;
+}
+
+.citas-header h1 {
+  color: #1f3c88;
+  margin: 0;
+}
+
+.citas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.cita-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.cita-card h2 {
+  color: #1f3c88;
+  font-size: 20px;
+  margin: 0 0 16px;
+}
+
+.cita-card p {
+  color: #666;
+  margin: 0 0 9px;
+}
+
+.cita-card p span {
+  color: #444;
+  font-weight: bold;
+}
+
+.cita-estado {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 14px;
+}
+
+.cita-estado-pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.cita-estado-aceptada {
+  background: #d4edda;
+  color: #155724;
+}
+
+.cita-estado-cancelada {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.cita-estado-finalizada {
+  background: #dbeafe;
+  color: #1f3c88;
+}
+
+.citas-vacias,
+.citas-error,
+.citas-estado-pagina {
+  text-align: center;
+  color: #666;
+  margin-top: 40px;
+}
+
+.citas-error {
+  color: #c0392b;
+}
+
+.citas-estado-pagina {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0;
+  color: #1f3c88;
+  font-size: 20px;
+}

@@ -17,6 +17,7 @@ import MisVehiculos from "./pages/MisVehiculos";
 import NuevoVehiculo from "./pages/NuevoVehiculo";
 import PerfilCliente from "./pages/PerfilCliente";
 import Citas from "./pages/Citas";
+import AgendarCita from "./pages/AgendarCita";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         <Route element={<ProtectedRoute rolesPermitidos={["cliente"]} />}>
           <Route path="/cliente" element={<ClienteDashboard />} />
           <Route path="/cliente/taller/:id" element={<PerfilTaller />} />
+          <Route path="/cliente/taller/:id/agendar" element={<AgendarCita />} />
           <Route path="/cliente/vehiculos" element={<MisVehiculos />} />
           <Route path="/cliente/vehiculos/nuevo" element={<NuevoVehiculo />} />
           <Route path="/cliente/vehiculos/:id/editar" element={<NuevoVehiculo />} />

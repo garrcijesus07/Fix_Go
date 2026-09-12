@@ -11,12 +11,28 @@ const {
     obtenerTalleres,
     obtenerTaller,
     crearTaller,
-    actualizarTaller
+    actualizarTaller,
+    obtenerHorariosTaller,
+    reemplazarHorariosTaller
 } = require('../controllers/tallerController');
 
 router.get('/', obtenerTalleres);
 
 router.get('/:id', obtenerTaller);
+
+router.get(
+    '/:id/horarios',
+    verificarToken,
+    soloTalleres,
+    obtenerHorariosTaller
+);
+
+router.put(
+    '/:id/horarios',
+    verificarToken,
+    soloTalleres,
+    reemplazarHorariosTaller
+);
 
 router.post(
     '/',

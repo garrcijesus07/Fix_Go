@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "../styles/PerfilTaller.css";
 
 function PerfilTaller() {
 
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const [taller, setTaller] = useState(null);
 
@@ -83,6 +84,7 @@ function PerfilTaller() {
 
                 <button
                     className="agendar-btn"
+                    onClick={() => navigate(`/cliente/taller/${id}/agendar`)}
                 >
                     📅 Agendar Cita
                 </button>
