@@ -34,6 +34,28 @@ CREATE TABLE IF NOT EXISTS `talleres` (
         ON UPDATE NO ACTION ON DELETE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Convencion de dia_semana:
+-- 0 = domingo, 1 = lunes, 2 = martes, 3 = miercoles,
+-- 4 = jueves, 5 = viernes, 6 = sabado.
+-- Un taller puede tener varios bloques diferentes en el mismo dia.
+CREATE TABLE IF NOT EXISTS `horarios_taller` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `taller_id` INT NOT NULL,
+    `dia_semana` TINYINT UNSIGNED NOT NULL,
+    `hora_inicio` TIME NOT NULL,
+    `hora_fin` TIME NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_horarios_taller_bloque`
+        (`taller_id`, `dia_semana`, `hora_inicio`, `hora_fin`),
+    CONSTRAINT `horarios_taller_ibfk_1`
+        FOREIGN KEY (`taller_id`) REFERENCES `talleres` (`id`)
+        ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT `chk_horarios_taller_dia_semana`
+        CHECK (`dia_semana` BETWEEN 0 AND 6),
+    CONSTRAINT `chk_horarios_taller_intervalo`
+        CHECK (`hora_inicio` < `hora_fin`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE IF NOT EXISTS `categorias` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(100) NOT NULL,
@@ -113,12 +135,15 @@ CREATE TABLE IF NOT EXISTS `citas` (
     `taller_id` INT NOT NULL,
     `mecanico_id` INT DEFAULT NULL,
     `fecha` DATETIME NOT NULL,
+    `tipo_cita` ENUM('diagnostico','reparacion') NOT NULL DEFAULT 'diagnostico',
+    `descripcion_falla` TEXT NULL,
+    `duracion_minutos` INT NOT NULL DEFAULT 60,
     `estado` ENUM('pendiente','aceptada','cancelada','finalizada') DEFAULT 'pendiente',
     PRIMARY KEY (`id`),
     KEY `cliente_id` (`cliente_id`),
-    KEY `vehiculo_id` (`vehiculo_id`),
-    KEY `taller_id` (`taller_id`),
     KEY `mecanico_id` (`mecanico_id`),
+    KEY `idx_citas_taller_estado_fecha` (`taller_id`, `estado`, `fecha`),
+    KEY `idx_citas_vehiculo_estado_fecha` (`vehiculo_id`, `estado`, `fecha`),
     CONSTRAINT `citas_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`)
         ON UPDATE NO ACTION ON DELETE NO ACTION,
     CONSTRAINT `citas_ibfk_2` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehiculos` (`id`)
@@ -126,7 +151,9 @@ CREATE TABLE IF NOT EXISTS `citas` (
     CONSTRAINT `citas_ibfk_3` FOREIGN KEY (`taller_id`) REFERENCES `talleres` (`id`)
         ON UPDATE NO ACTION ON DELETE NO ACTION,
     CONSTRAINT `citas_ibfk_4` FOREIGN KEY (`mecanico_id`) REFERENCES `usuarios` (`id`)
-        ON UPDATE NO ACTION ON DELETE NO ACTION
+        ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT `chk_citas_duracion_minutos`
+        CHECK (`duracion_minutos` BETWEEN 1 AND 1440)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE IF NOT EXISTS `estados_vehiculo` (

@@ -221,6 +221,9 @@ Se eliminó `DROP DATABASE` y no se ejecutó el archivo corregido sobre la base
 actual. El respaldo previo permanece disponible. Queda pendiente definir un
 sistema de migraciones para futuros cambios de esquema.
 
+`backend/base_de_datos.sql` fue sincronizado con el esquema posterior a la
+migración 001; las instalaciones nuevas ya crean directamente el modelo actualizado.
+
 La estructura real de las tablas debe verificarse directamente en el archivo SQL.
 
 Backend
