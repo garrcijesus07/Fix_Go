@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS `talleres` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `usuario_id` INT NOT NULL,
     `nombre` VARCHAR(150) NOT NULL,
+    -- Campo legado temporal; la fuente oficial es taller_categoria.
+    `categoria` VARCHAR(100) NOT NULL DEFAULT 'mecanica_general',
     `descripcion` TEXT,
     `direccion` TEXT,
     `telefono` VARCHAR(20) DEFAULT NULL,
@@ -59,7 +61,15 @@ CREATE TABLE IF NOT EXISTS `horarios_taller` (
 CREATE TABLE IF NOT EXISTS `categorias` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(100) NOT NULL,
+    `slug` VARCHAR(100) NOT NULL,
+    `activo` TINYINT(1) NOT NULL DEFAULT 1,
+    `orden` INT NOT NULL DEFAULT 0,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
+    ,UNIQUE KEY `uq_categorias_slug` (`slug`)
+    ,CONSTRAINT `chk_categorias_activo` CHECK (`activo` IN (0, 1))
+    ,CONSTRAINT `chk_categorias_orden` CHECK (`orden` BETWEEN 0 AND 100000)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE IF NOT EXISTS `taller_categoria` (
@@ -69,18 +79,22 @@ CREATE TABLE IF NOT EXISTS `taller_categoria` (
     PRIMARY KEY (`id`),
     KEY `taller_id` (`taller_id`),
     KEY `categoria_id` (`categoria_id`),
+    UNIQUE KEY `uq_taller_categoria` (`taller_id`, `categoria_id`),
     CONSTRAINT `taller_categoria_ibfk_1` FOREIGN KEY (`taller_id`) REFERENCES `talleres` (`id`)
         ON UPDATE NO ACTION ON DELETE NO ACTION,
     CONSTRAINT `taller_categoria_ibfk_2` FOREIGN KEY (`categoria_id`) REFERENCES `categorias` (`id`)
         ON UPDATE NO ACTION ON DELETE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Politica de esta version: un mecanico solo puede pertenecer a un taller.
+-- La clave compuesta tambien impide repetir exactamente una asociacion.
 CREATE TABLE IF NOT EXISTS `mecanicos_taller` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `mecanico_id` INT NOT NULL,
     `taller_id` INT NOT NULL,
     PRIMARY KEY (`id`),
-    KEY `mecanico_id` (`mecanico_id`),
+    UNIQUE KEY `uq_mecanicos_taller_asociacion` (`mecanico_id`, `taller_id`),
+    UNIQUE KEY `uq_mecanicos_taller_mecanico` (`mecanico_id`),
     KEY `taller_id` (`taller_id`),
     CONSTRAINT `mecanicos_taller_ibfk_1` FOREIGN KEY (`mecanico_id`) REFERENCES `usuarios` (`id`)
         ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -88,16 +102,23 @@ CREATE TABLE IF NOT EXISTS `mecanicos_taller` (
         ON UPDATE NO ACTION ON DELETE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Horario laboral individual del mecanico. Usa la misma convencion numerica
+-- de dia_semana que horarios_taller.
 CREATE TABLE IF NOT EXISTS `horarios` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `mecanico_id` INT NOT NULL,
-    `dia_semana` VARCHAR(20) DEFAULT NULL,
-    `hora_inicio` TIME DEFAULT NULL,
-    `hora_fin` TIME DEFAULT NULL,
+    `dia_semana` TINYINT UNSIGNED NOT NULL,
+    `hora_inicio` TIME NOT NULL,
+    `hora_fin` TIME NOT NULL,
     PRIMARY KEY (`id`),
-    KEY `mecanico_id` (`mecanico_id`),
+    UNIQUE KEY `uq_horarios_mecanico_bloque`
+        (`mecanico_id`, `dia_semana`, `hora_inicio`, `hora_fin`),
     CONSTRAINT `horarios_ibfk_1` FOREIGN KEY (`mecanico_id`) REFERENCES `usuarios` (`id`)
-        ON UPDATE NO ACTION ON DELETE NO ACTION
+        ON UPDATE NO ACTION ON DELETE NO ACTION,
+    CONSTRAINT `chk_horarios_dia_semana`
+        CHECK (`dia_semana` BETWEEN 0 AND 6),
+    CONSTRAINT `chk_horarios_intervalo`
+        CHECK (`hora_inicio` < `hora_fin`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE IF NOT EXISTS `afiliaciones` (
@@ -139,9 +160,11 @@ CREATE TABLE IF NOT EXISTS `citas` (
     `descripcion_falla` TEXT NULL,
     `duracion_minutos` INT NOT NULL DEFAULT 60,
     `estado` ENUM('pendiente','aceptada','cancelada','finalizada') DEFAULT 'pendiente',
+    `confirmada_mecanico` TINYINT(1) NOT NULL DEFAULT 0,
+    `fecha_confirmacion_mecanico` DATETIME NULL,
     PRIMARY KEY (`id`),
     KEY `cliente_id` (`cliente_id`),
-    KEY `mecanico_id` (`mecanico_id`),
+    KEY `idx_citas_mecanico_estado_fecha` (`mecanico_id`, `estado`, `fecha`),
     KEY `idx_citas_taller_estado_fecha` (`taller_id`, `estado`, `fecha`),
     KEY `idx_citas_vehiculo_estado_fecha` (`vehiculo_id`, `estado`, `fecha`),
     CONSTRAINT `citas_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`)
@@ -153,7 +176,14 @@ CREATE TABLE IF NOT EXISTS `citas` (
     CONSTRAINT `citas_ibfk_4` FOREIGN KEY (`mecanico_id`) REFERENCES `usuarios` (`id`)
         ON UPDATE NO ACTION ON DELETE NO ACTION,
     CONSTRAINT `chk_citas_duracion_minutos`
-        CHECK (`duracion_minutos` BETWEEN 1 AND 1440)
+        CHECK (`duracion_minutos` BETWEEN 1 AND 1440),
+    CONSTRAINT `chk_citas_confirmada_mecanico`
+        CHECK (`confirmada_mecanico` IN (0, 1)),
+    CONSTRAINT `chk_citas_fecha_confirmacion_mecanico`
+        CHECK (
+            `confirmada_mecanico` = 0
+            OR `fecha_confirmacion_mecanico` IS NOT NULL
+        )
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE IF NOT EXISTS `estados_vehiculo` (

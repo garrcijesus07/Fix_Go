@@ -1,0 +1,244 @@
+.mecanicos-taller-container {
+  background: #f4f6f9;
+  min-height: calc(100vh - 50px);
+  padding: 32px 20px;
+}
+
+.mecanicos-taller-card {
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  margin: 0 auto;
+  max-width: 880px;
+  padding: 30px;
+}
+
+.mecanicos-taller-encabezado {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mecanicos-taller-encabezado h1,
+.mecanicos-taller-seccion h2 {
+  color: #1f3c88;
+  margin-top: 0;
+}
+
+.mecanicos-taller-encabezado p {
+  color: #555;
+  margin: 8px 0 0;
+}
+
+.mecanicos-taller-encabezado a,
+.mecanicos-taller-estado a {
+  color: #1f3c88;
+  font-weight: bold;
+}
+
+.mecanicos-taller-etiqueta {
+  color: #00a884 !important;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mecanicos-taller-selector,
+.mecanicos-taller-seccion {
+  border-radius: 12px;
+  margin-top: 22px;
+  padding: 18px;
+}
+
+.mecanicos-taller-selector {
+  background: #eef3ff;
+}
+
+.mecanicos-taller-selector label,
+.mecanicos-taller-busqueda label,
+.mecanicos-taller-registro label {
+  color: #1f3c88;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.mecanicos-taller-selector p {
+  margin: 0;
+}
+
+.mecanicos-taller-selector select,
+.mecanicos-taller-busqueda input,
+.mecanicos-taller-registro input {
+  border: 1px solid #cbd3e1;
+  border-radius: 9px;
+  font-size: 15px;
+  padding: 11px;
+  width: 100%;
+}
+
+.mecanicos-taller-seccion {
+  border: 1px solid #dfe4ec;
+}
+
+.mecanicos-taller-lista {
+  display: grid;
+  gap: 12px;
+}
+
+.mecanicos-taller-item,
+.mecanicos-taller-resultado {
+  align-items: center;
+  background: #f8f9fb;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  padding: 14px;
+}
+
+.mecanicos-taller-item h3,
+.mecanicos-taller-resultado h3 {
+  margin: 0 0 5px;
+}
+
+.mecanicos-taller-item p,
+.mecanicos-taller-resultado p {
+  margin: 3px 0;
+}
+
+.mecanicos-taller-item span {
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 6px 10px;
+}
+
+.mecanicos-taller-acciones {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mecanicos-taller-acciones a {
+  color: #1f3c88;
+  font-weight: bold;
+}
+
+.mecanicos-taller-acciones .mecanicos-taller-desvincular {
+  background: #fdecea;
+  border: none;
+  border-radius: 9px;
+  color: #b83225;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 9px 12px;
+}
+
+.mecanicos-taller-acciones .mecanicos-taller-desvincular:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.mecanicos-taller-item .activo {
+  background: #e8f8f3;
+  color: #08755f;
+}
+
+.mecanicos-taller-item .inactivo {
+  background: #f1f1f1;
+  color: #666;
+}
+
+.mecanicos-taller-busqueda > div {
+  display: flex;
+  gap: 10px;
+}
+
+.mecanicos-taller-busqueda button,
+.mecanicos-taller-resultado button,
+.mecanicos-taller-registro button {
+  background: #00b894;
+  border: none;
+  border-radius: 9px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 11px 16px;
+}
+
+.mecanicos-taller-busqueda button:disabled,
+.mecanicos-taller-resultado button:disabled,
+.mecanicos-taller-registro button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.mecanicos-taller-resultado {
+  margin-top: 14px;
+}
+
+.mecanicos-taller-aviso {
+  color: #8a5a00;
+  font-weight: bold;
+}
+
+.mecanicos-taller-registro {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.mecanicos-taller-registro button {
+  justify-self: start;
+  margin-top: 6px;
+}
+
+.mecanicos-taller-ayuda {
+  color: #555;
+  font-size: 14px;
+  margin: -3px 0 4px;
+}
+
+.mecanicos-taller-error,
+.mecanicos-taller-exito,
+.mecanicos-taller-estado {
+  border-radius: 10px;
+  margin: 18px 0 0;
+  padding: 12px;
+}
+
+.mecanicos-taller-error {
+  background: #fdecea;
+  color: #b83225;
+}
+
+.mecanicos-taller-exito {
+  background: #e8f8f3;
+  color: #08755f;
+}
+
+.mecanicos-taller-estado {
+  background: #f7f8fa;
+  color: #555;
+}
+
+@media (max-width: 680px) {
+  .mecanicos-taller-card {
+    padding: 20px;
+  }
+
+  .mecanicos-taller-encabezado,
+  .mecanicos-taller-item,
+  .mecanicos-taller-resultado,
+  .mecanicos-taller-busqueda > div {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mecanicos-taller-acciones {
+    align-items: flex-start;
+  }
+}

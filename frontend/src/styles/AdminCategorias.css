@@ -1,0 +1,44 @@
+.admin-categorias { margin: 0 auto; max-width: var(--content-width); min-height: calc(100vh - 72px); padding: 38px 24px 70px; }
+.admin-categorias-header { align-items: flex-start; display: flex; justify-content: space-between; margin-bottom: 24px; }
+.admin-categorias-header p,.admin-categorias-formulario>div>span,.admin-categorias-listado header span { color: var(--secondary-dark); font-size: 11px; font-weight: 800; letter-spacing: .1em; margin: 0; text-transform: uppercase; }
+.admin-categorias-header h1 { color: var(--text); font-size: 34px; letter-spacing: -.04em; margin: 4px 0 6px; }
+.admin-categorias-header>div>span { color: var(--text-soft); }
+.admin-categorias-header a { color: var(--primary); font-weight: 750; text-decoration: none; }
+.admin-categorias-resumen { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); margin-bottom: 20px; }
+.admin-categorias-resumen article { background: white; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-sm); padding: 18px 20px; }
+.admin-categorias-resumen span { color: var(--text-soft); display: block; font-size: 12px; font-weight: 700; }
+.admin-categorias-resumen strong { color: var(--primary); display: block; font-size: 27px; margin-top: 5px; }
+.admin-categorias-formulario,.admin-categorias-listado { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 24px; }
+.admin-categorias-formulario { margin-bottom: 20px; }
+.admin-categorias-formulario h2,.admin-categorias-listado h2 { color: var(--text); font-size: 21px; margin: 4px 0 18px; }
+.admin-categorias-formulario form { align-items: end; display: grid; gap: 14px; grid-template-columns: 2fr 2fr 1fr auto; }
+.admin-categorias-formulario label { color: var(--text); font-size: 12px; font-weight: 750; }
+.admin-categorias-formulario input { background: #f8fafc; border: 1px solid var(--border); border-radius: 11px; display: block; margin-top: 7px; min-height: 44px; padding: 11px 12px; width: 100%; }
+.admin-categorias-formulario input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(11, 58, 117, .12); outline: none; }
+.admin-categorias-form-acciones,.admin-categorias-acciones { display: flex; gap: 8px; }
+.admin-categorias button { border: 0; border-radius: 10px; cursor: pointer; font-weight: 750; min-height: 42px; padding: 10px 14px; }
+.admin-categorias-form-acciones button,.admin-categorias-acciones .activar { background: var(--secondary); color: white; }
+.admin-categorias button:disabled { cursor: wait; opacity: .65; }
+.admin-categorias button.secundario,.admin-categorias-acciones .editar { background: var(--primary-soft); color: var(--primary); }
+.admin-categorias-acciones .desactivar { background: #feeceb; color: var(--danger); }
+.admin-categorias-mensaje { border-radius: 12px; margin: 0 0 20px; padding: 13px 16px; }
+.admin-categorias-mensaje.error { background: #feeceb; color: #a52d2d; }
+.admin-categorias-mensaje.exito { background: #e9f9f1; color: #087a48; }
+.admin-categorias-listado>header { align-items: center; display: flex; justify-content: space-between; }
+.admin-categorias-listado>header strong { color: var(--text-soft); font-size: 12px; }
+.admin-categorias-tabla { border: 1px solid var(--border); border-radius: 14px; overflow: visible; }
+.admin-categorias-fila { align-items: center; border-bottom: 1px solid var(--border); display: grid; gap: 12px; grid-template-columns: 1.45fr 1.4fr .5fr .65fr 1.4fr; min-height: 65px; padding: 11px 14px; }
+.admin-categorias-fila:last-child { border-bottom: 0; }
+.admin-categorias-cabecera { background: #f8fafc; border-radius: 14px 14px 0 0; color: var(--text-soft); font-size: 11px; font-weight: 800; letter-spacing: .06em; min-height: 42px; text-transform: uppercase; }
+.admin-categorias-fila code { color: var(--primary); overflow-wrap: anywhere; }
+.admin-categorias-badge { border-radius: 999px; display: inline-block; font-size: 11px; font-weight: 800; padding: 6px 9px; }
+.admin-categorias-badge.activo { background: #e9f9f1; color: #087a48; }
+.admin-categorias-badge.inactivo { background: #eef0f3; color: var(--text-soft); }
+.admin-categorias-acciones { align-items: center; flex-wrap: wrap; position: relative; }
+.admin-categorias-confirmacion { background: white; border: 1px solid var(--border); border-radius: 13px; box-shadow: var(--shadow); min-width: 290px; padding: 14px; position: absolute; right: 0; top: 46px; z-index: 3; }
+.admin-categorias-confirmacion p { color: var(--text-soft); font-size: 12px; line-height: 1.45; margin: 0 0 10px; }
+.admin-categorias-confirmacion button:not(.secundario) { background: var(--danger); color: white; }
+.admin-categorias-vacio { color: var(--text-soft); margin: 10px 0 0; padding: 24px; text-align: center; }
+@media (max-width: 900px) { .admin-categorias-formulario form { grid-template-columns: 1fr 1fr; } .admin-categorias-form-acciones { align-self: end; } }
+@media (max-width: 720px) { .admin-categorias { padding: 26px 16px 50px; } .admin-categorias-header { gap: 14px; flex-direction: column; } .admin-categorias-header h1 { font-size: 29px; } .admin-categorias-formulario,.admin-categorias-listado { padding: 18px; } .admin-categorias-formulario form { grid-template-columns: 1fr; } .admin-categorias-cabecera { display: none; } .admin-categorias-tabla { border: 0; display: grid; gap: 13px; } .admin-categorias-fila { align-items: start; border: 1px solid var(--border); border-radius: 14px; display: grid; gap: 12px; grid-template-columns: 1fr 1fr; padding: 16px; } .admin-categorias-fila>div::before { color: var(--text-soft); content: attr(data-label); display: block; font-size: 10px; font-weight: 800; letter-spacing: .07em; margin-bottom: 4px; text-transform: uppercase; } .admin-categorias-acciones { grid-column: 1 / -1; } .admin-categorias-confirmacion { left: 0; min-width: 0; right: auto; width: min(330px, calc(100vw - 66px)); } }
+@media (max-width: 430px) { .admin-categorias-resumen { grid-template-columns: 1fr; } .admin-categorias-fila { grid-template-columns: 1fr; } .admin-categorias-acciones { grid-column: auto; } .admin-categorias-form-acciones { flex-direction: column-reverse; } .admin-categorias-form-acciones button { width: 100%; } }

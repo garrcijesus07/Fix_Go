@@ -1,73 +1,21 @@
-.taller-card {
-
-    background: white;
-
-    border-radius: 15px;
-
-    padding: 20px;
-
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-
-    transition: all 0.3s ease;
-
-}
-
-.taller-card:hover {
-
-    transform: translateY(-3px);
-
-    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-
-}
-
-.taller-card h2 {
-
-    color: #1f3c88;
-
-    margin-bottom: 10px;
-
-}
-
-.taller-card p {
-
-    color: #666;
-
-    margin-bottom: 8px;
-
-}
-
-.taller-card-btn {
-
-    width: 100%;
-
-    margin-top: 15px;
-
-    background: #00b894;
-
-    color: white;
-
-    border: none;
-
-    padding: 12px;
-
-    border-radius: 10px;
-
-    cursor: pointer;
-
-    font-size: 15px;
-
-    font-weight: bold;
-
-}
-
-.taller-card-btn:hover {
-
-    background: #00a383;
-
-}
-
-.taller-card-link {
-
-    text-decoration: none;
-
-}
+.taller-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); min-width: 0; overflow: hidden; transition: transform .2s ease, box-shadow .2s ease; }
+.taller-card:hover { box-shadow: var(--shadow); transform: translateY(-4px); }
+.taller-card-imagen { align-items: flex-end; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); background-position: center; background-size: cover; display: flex; height: 145px; justify-content: space-between; padding: 15px; position: relative; }
+.taller-card-imagen::after { background: linear-gradient(transparent, rgba(7,43,87,.7)); bottom: 0; content: ""; height: 65%; left: 0; position: absolute; width: 100%; }
+.taller-card-imagen > * { position: relative; z-index: 1; }
+.taller-card-imagen > span { align-items: center; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 14px; color: white; display: flex; font-size: 22px; font-weight: 800; height: 58px; justify-content: center; width: 58px; }
+.taller-card-imagen small { color: white; font-weight: 700; }
+.taller-card-contenido { padding: 18px; }
+.taller-card-titulo { align-items: flex-start; display: flex; gap: 10px; justify-content: space-between; }
+.taller-card-titulo h3 { color: var(--text); font-size: 19px; margin: 0; }
+.taller-card-titulo span { background: #e9f9f1; border-radius: 999px; color: #087b49; font-size: 11px; font-weight: 800; padding: 5px 8px; }
+.taller-card-categorias { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.taller-card-categorias span { background: var(--primary-soft); border-radius: 999px; color: var(--primary); font-size: 11px; font-weight: 750; padding: 5px 8px; }
+.taller-card-descripcion { color: var(--text-soft); display: -webkit-box; font-size: 14px; margin: 9px 0 14px; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.taller-card-dato { align-items: flex-start; color: var(--text-soft); display: flex; font-size: 13px; gap: 7px; margin: 6px 0; }
+.taller-card-dato span { color: var(--primary); font-weight: 800; }
+.taller-card-acciones { display: grid; gap: 9px; grid-template-columns: 1fr 1.15fr; margin-top: 17px; }
+.taller-card-acciones a { border-radius: 11px; font-size: 13px; font-weight: 750; padding: 11px 9px; text-align: center; text-decoration: none; }
+.taller-card-secundario { border: 1px solid var(--border); color: var(--primary); }
+.taller-card-btn { background: var(--secondary); color: white; }
+.taller-card-btn:hover { background: var(--secondary-dark); }

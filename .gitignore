@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 !**/.env.example
+credenciales.txt
 
 # Dependencies and build output
 node_modules/

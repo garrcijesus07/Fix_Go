@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
+import Navbar from "../components/Navbar";
 
 import "../styles/MisVehiculos.css";
 
@@ -80,7 +81,7 @@ function MisVehiculos() {
 
     return (
 
-        <div className="vehiculos-container">
+        <><Navbar /><div className="vehiculos-container">
 
             <div className="vehiculos-header">
 
@@ -185,7 +186,7 @@ function MisVehiculos() {
                 </Link>
 
             </div>
-        </div>
+        </div></>
 
     );
 

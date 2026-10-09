@@ -1,145 +1,82 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
 import TallerCard from "../components/TallerCard";
-import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-
 import "../styles/ClienteDashboard.css";
 
 function ClienteDashboard() {
-
     const [talleres, setTalleres] = useState([]);
+    const [busqueda, setBusqueda] = useState("");
+    const [categoria, setCategoria] = useState("");
+    const [cargando, setCargando] = useState(true);
+    const [categorias, setCategorias] = useState([]);
 
     useEffect(() => {
-
-        const obtenerTalleres = async () => {
-
+        const cargarCategorias = async () => {
             try {
-
-                const response = await api.get(
-                    "/talleres"
-                );
-
-                setTalleres(response.data);
-
+                const response = await api.get("/categorias");
+                setCategorias(Array.isArray(response.data) ? response.data : []);
             } catch (error) {
-
                 console.error(error);
-
             }
-
         };
-
-        obtenerTalleres();
-
+        cargarCategorias();
     }, []);
 
-    return (
+    useEffect(() => {
+        const obtenerTalleres = async () => {
+            setCargando(true);
+            try {
+                const response = await api.get("/talleres", { params: categoria ? { categoria } : {} });
+                setTalleres(Array.isArray(response.data) ? response.data : []);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setCargando(false);
+            }
+        };
+        obtenerTalleres();
+    }, [categoria]);
 
-        <div className="cliente-container">
+    const talleresVisibles = useMemo(() => {
+        const termino = busqueda.trim().toLowerCase();
+        return talleres.filter((taller) => {
+            const contenido = [taller.nombre, taller.descripcion, taller.direccion].filter(Boolean).join(" ").toLowerCase();
+            return !termino || contenido.includes(termino);
+        });
+    }, [talleres, busqueda]);
 
-            <div className="navbar">
-
-                <div className="navbar-top">
-
-                    <h2>
-                        Fix-Go
-                    </h2>
-
-                    <Navbar />
-
-                    <Link
-                        to="/cliente/perfil"
-                        style={{
-                            color: "white",
-                            textDecoration: "none",
-                            fontSize: "24px"
-                        }}
-                    >
-                        👤
-                    </Link>
-
-                </div>
-
-                <p>
-                    Bienvenido nuevamente
-                </p>
-
+    return <div className="cliente-container">
+        <Navbar />
+        <section className="cliente-hero">
+            <div className="cliente-hero-content">
+                <p className="cliente-eyebrow">Servicios automotrices cerca de ti</p>
+                <h1>Tu auto en las mejores manos</h1>
+                <p>Encuentra talleres, revisa su información y agenda una cita en pocos pasos.</p>
+                <label className="cliente-buscador">
+                    <span aria-hidden="true">⌕</span>
+                    <span className="sr-only">Buscar talleres o servicios</span>
+                    <input value={busqueda} onChange={(event) => setBusqueda(event.target.value)} placeholder="Buscar talleres o servicios..." />
+                </label>
             </div>
-
-            <div className="dashboard-content">
-
-                <input
-                    className="search-box"
-                    type="text"
-                    placeholder="🔍 Buscar talleres..."
-                />
-
-                <Link
-                    to="/cliente/vehiculos"
-                    style={{ textDecoration: "none" }}
-                >
-
-                    <button className="vehiculos-btn">
-                        🚗 Mis Vehículos
-                    </button>
-
-                </Link>
-                <div className="welcome-card">
-
-                    <h3>
-                        🚗 Gestiona tus vehículos
-                    </h3>
-
-                    <p>
-                        Consulta citas, historial y estado de reparación.
-                    </p>
-
-                </div>
-                <h2 className="section-title">
-                    Talleres Disponibles
-                </h2>
-
-                <div className="card-grid">
-
-                    {
-                        talleres.map((taller) => (
-
-                            <TallerCard
-                                key={taller.id}
-                                taller={taller}
-                            />
-
-                        ))
-                    }
-
-                </div>
-
+            <div className="cliente-hero-visual" aria-hidden="true">
+                <span>FIX_GO</span><strong>Servicio confiable</strong><small>Agenda · Confirma · Conduce</small>
             </div>
-
-            <div className="bottom-nav">
-
-                <Link to="/cliente">
-                    <button>🏠</button>
-                </Link>
-
-                <Link to="/cliente/vehiculos">
-                    <button>🚗</button>
-                </Link>
-
-                <Link to="/cliente/citas">
-                    <button>📅</button>
-                </Link>
-
-                <Link to="/cliente/perfil">
-                    <button>👤</button>
-                </Link>
-
+        </section>
+        <main className="dashboard-content">
+            <div className="cliente-categorias" aria-label="Filtrar por servicio">
+                <button type="button" className={categoria === "" ? "activo" : ""} onClick={() => setCategoria("")}>Todos</button>
+                {categorias.map((item) => <button type="button" key={item.id} className={categoria === item.slug ? "activo" : ""} onClick={() => setCategoria(item.slug)}>{item.nombre}</button>)}
             </div>
-        </div>
-
-    );
-
+            <div className="cliente-seccion-encabezado">
+                <div><p className="cliente-eyebrow">Explora opciones</p><h2>Talleres disponibles</h2></div>
+                <span>{talleresVisibles.length} resultado{talleresVisibles.length === 1 ? "" : "s"}</span>
+            </div>
+            {cargando ? <p className="cliente-estado">Cargando talleres...</p> : talleresVisibles.length === 0 ?
+                <p className="cliente-estado">No encontramos talleres con esos criterios.</p> :
+                <div className="card-grid">{talleresVisibles.map((taller) => <TallerCard key={taller.id} taller={taller} />)}</div>}
+        </main>
+    </div>;
 }
 
 export default ClienteDashboard;

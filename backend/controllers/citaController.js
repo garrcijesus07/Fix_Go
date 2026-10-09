@@ -294,6 +294,7 @@ exports.obtenerMisCitas = (req, res) => {
             c.id,
             c.fecha,
             c.estado,
+            c.confirmada_mecanico,
             c.taller_id,
             t.nombre AS taller_nombre,
             c.vehiculo_id,
@@ -316,7 +317,10 @@ exports.obtenerMisCitas = (req, res) => {
             });
         }
 
-        return res.json(citas);
+        return res.json(citas.map((cita) => ({
+            ...cita,
+            confirmada_mecanico: Boolean(cita.confirmada_mecanico)
+        })));
     });
 };
 
@@ -440,5 +444,326 @@ exports.obtenerDisponibilidad = async (req, res) => {
     } catch (error) {
         console.error('Error al obtener disponibilidad de citas:', error);
         return res.status(500).json({ mensaje: 'Error al obtener la disponibilidad' });
+    }
+};
+
+exports.asignarMecanico = async (req, res) => {
+    const citaId = Number(req.params.id);
+    const mecanicoId = Number(req.body?.mecanico_id);
+    const usuarioId = req.usuario.id;
+    if (!Number.isInteger(citaId) || citaId <= 0 || !Number.isInteger(mecanicoId) || mecanicoId <= 0) {
+        return res.status(400).json({ mensaje: 'Cita y mecanico validos son requeridos' });
+    }
+
+    let connection;
+    let transaccionIniciada = false;
+    try {
+        connection = await db.promise().getConnection();
+        const [referencias] = await connection.query('SELECT taller_id FROM citas WHERE id = ?', [citaId]);
+        if (referencias.length === 0) return res.status(404).json({ mensaje: 'Cita no encontrada' });
+        const tallerId = referencias[0].taller_id;
+
+        await connection.beginTransaction();
+        transaccionIniciada = true;
+        const [talleres] = await connection.query(
+            'SELECT id FROM talleres WHERE id = ? AND usuario_id = ? FOR UPDATE',
+            [tallerId, usuarioId]
+        );
+        if (talleres.length === 0) throw crearErrorHttp(404, 'Cita no encontrada');
+
+        const [asociaciones] = await connection.query(
+            `SELECT mt.id FROM mecanicos_taller mt
+             INNER JOIN usuarios u ON u.id = mt.mecanico_id
+             WHERE mt.taller_id = ? AND mt.mecanico_id = ?
+               AND u.rol = 'mecanico' AND u.activo = 1 FOR UPDATE`,
+            [tallerId, mecanicoId]
+        );
+        if (asociaciones.length === 0) throw crearErrorHttp(404, 'Mecanico asociado no encontrado');
+
+        const [citas] = await connection.query(
+            `SELECT id, taller_id, mecanico_id, fecha, duracion_minutos, estado,
+                    confirmada_mecanico, fecha_confirmacion_mecanico
+             FROM citas WHERE id = ? AND taller_id = ? FOR UPDATE`,
+            [citaId, tallerId]
+        );
+        if (citas.length === 0) throw crearErrorHttp(404, 'Cita no encontrada');
+        const cita = citas[0];
+        if (!['pendiente', 'aceptada'].includes(cita.estado)) {
+            throw crearErrorHttp(409, 'La cita ya no admite asignacion de mecanico');
+        }
+        if (Number(cita.mecanico_id) === mecanicoId) {
+            await connection.commit();
+            transaccionIniciada = false;
+            return res.json({
+                mensaje: 'El mecanico ya estaba asignado a la cita',
+                cita: {
+                    id: cita.id,
+                    mecanico_id: mecanicoId,
+                    confirmada_mecanico: Boolean(cita.confirmada_mecanico),
+                    fecha_confirmacion_mecanico: cita.fecha_confirmacion_mecanico
+                }
+            });
+        }
+
+        const [horarios] = await connection.query(
+            `SELECT id FROM horarios WHERE mecanico_id = ?
+               AND dia_semana = DAYOFWEEK(?) - 1
+               AND DATE(DATE_ADD(?, INTERVAL ? MINUTE)) = DATE(?)
+               AND TIME(?) >= hora_inicio
+               AND TIME(DATE_ADD(?, INTERVAL ? MINUTE)) <= hora_fin
+             LIMIT 1 FOR UPDATE`,
+            [mecanicoId, cita.fecha, cita.fecha, cita.duracion_minutos, cita.fecha,
+                cita.fecha, cita.fecha, cita.duracion_minutos]
+        );
+        if (horarios.length === 0) {
+            throw crearErrorHttp(409, 'El mecanico no tiene horario disponible para la cita');
+        }
+
+        const [conflictos] = await connection.query(
+            `SELECT id FROM citas WHERE mecanico_id = ? AND id <> ?
+               AND estado IN ('pendiente', 'aceptada')
+               AND fecha < DATE_ADD(?, INTERVAL ? MINUTE)
+               AND DATE_ADD(fecha, INTERVAL duracion_minutos MINUTE) > ?
+             FOR UPDATE`,
+            [mecanicoId, citaId, cita.fecha, cita.duracion_minutos, cita.fecha]
+        );
+        if (conflictos.length > 0) {
+            throw crearErrorHttp(409, 'El mecanico ya tiene una cita activa en ese horario');
+        }
+
+        await connection.query(
+            `UPDATE citas SET mecanico_id = ?, confirmada_mecanico = 0,
+                    fecha_confirmacion_mecanico = NULL WHERE id = ?`,
+            [mecanicoId, citaId]
+        );
+        await connection.commit();
+        transaccionIniciada = false;
+        return res.json({
+            mensaje: 'Mecanico asignado correctamente',
+            cita: { id: citaId, mecanico_id: mecanicoId, confirmada_mecanico: false, fecha_confirmacion_mecanico: null }
+        });
+    } catch (error) {
+        if (connection && transaccionIniciada) {
+            try { await connection.rollback(); } catch (errorRollback) {
+                console.error('Error al revertir asignacion de mecanico:', errorRollback);
+            }
+        }
+        if (error.status) return res.status(error.status).json({ mensaje: error.message });
+        console.error('Error al asignar mecanico:', error);
+        return res.status(500).json({ mensaje: 'Error al asignar el mecanico' });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+exports.actualizarEstadoCita = async (req, res) => {
+    const citaId = Number(req.params.id);
+    const nuevoEstado = req.body?.estado;
+    const usuarioId = req.usuario.id;
+    const transiciones = {
+        pendiente: ['aceptada', 'cancelada'],
+        aceptada: ['cancelada', 'finalizada'],
+        cancelada: [],
+        finalizada: []
+    };
+
+    if (!Number.isInteger(citaId) || citaId <= 0) {
+        return res.status(400).json({ mensaje: 'Cita no valida' });
+    }
+    if (!Object.prototype.hasOwnProperty.call(transiciones, nuevoEstado)) {
+        return res.status(400).json({ mensaje: 'Estado no valido' });
+    }
+
+    let connection;
+    let transaccionIniciada = false;
+    try {
+        connection = await db.promise().getConnection();
+        await connection.beginTransaction();
+        transaccionIniciada = true;
+        const [citas] = await connection.query(
+            `SELECT c.id, c.estado, c.mecanico_id, c.confirmada_mecanico
+             FROM citas c
+             INNER JOIN talleres t ON t.id = c.taller_id
+             WHERE c.id = ? AND t.usuario_id = ?
+             FOR UPDATE`,
+            [citaId, usuarioId]
+        );
+        if (citas.length === 0) throw crearErrorHttp(404, 'Cita no encontrada');
+
+        const cita = citas[0];
+        if (!transiciones[cita.estado]?.includes(nuevoEstado)) {
+            throw crearErrorHttp(409, `No se permite cambiar una cita ${cita.estado} a ${nuevoEstado}`);
+        }
+        if (
+            nuevoEstado === 'finalizada' &&
+            (cita.estado !== 'aceptada' || cita.mecanico_id === null || !cita.confirmada_mecanico)
+        ) {
+            throw crearErrorHttp(
+                409,
+                'Para finalizar, la cita debe estar aceptada, tener mecanico asignado y estar confirmada por el mecanico'
+            );
+        }
+
+        await connection.query('UPDATE citas SET estado = ? WHERE id = ?', [nuevoEstado, citaId]);
+        await connection.commit();
+        transaccionIniciada = false;
+        return res.json({
+            mensaje: 'Estado de la cita actualizado correctamente',
+            cita: {
+                id: citaId,
+                estado: nuevoEstado,
+                mecanico_id: cita.mecanico_id,
+                confirmada_mecanico: Boolean(cita.confirmada_mecanico)
+            }
+        });
+    } catch (error) {
+        if (connection && transaccionIniciada) {
+            try { await connection.rollback(); } catch (errorRollback) {
+                console.error('Error al revertir cambio de estado de cita:', errorRollback);
+            }
+        }
+        if (error.status) return res.status(error.status).json({ mensaje: error.message });
+        console.error('Error al actualizar estado de cita:', error);
+        return res.status(500).json({ mensaje: 'Error al actualizar el estado de la cita' });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+exports.obtenerCitasMecanico = async (req, res) => {
+    const mecanicoId = req.usuario.id;
+    try {
+        const [filas] = await db.promise().query(
+            `SELECT c.id, DATE_FORMAT(c.fecha, '%Y-%m-%dT%H:%i:%s') AS fecha,
+                    c.duracion_minutos, c.tipo_cita, c.descripcion_falla, c.estado,
+                    c.confirmada_mecanico,
+                    DATE_FORMAT(c.fecha_confirmacion_mecanico, '%Y-%m-%dT%H:%i:%s') AS fecha_confirmacion_mecanico,
+                    t.id AS taller_id, t.nombre AS taller_nombre,
+                    cl.id AS cliente_id, cl.nombre AS cliente_nombre,
+                    v.id AS vehiculo_id, v.marca, v.modelo, v.placas
+             FROM citas c
+             INNER JOIN talleres t ON t.id = c.taller_id
+             INNER JOIN usuarios cl ON cl.id = c.cliente_id
+             INNER JOIN vehiculos v ON v.id = c.vehiculo_id
+             WHERE c.mecanico_id = ?
+             ORDER BY (c.fecha >= NOW()) DESC,
+                      CASE WHEN c.fecha >= NOW() THEN c.fecha END ASC,
+                      CASE WHEN c.fecha < NOW() THEN c.fecha END DESC,
+                      c.id ASC`,
+            [mecanicoId]
+        );
+        const citas = filas.map((fila) => ({
+            id: fila.id,
+            fecha: fila.fecha,
+            duracion_minutos: fila.duracion_minutos,
+            tipo_cita: fila.tipo_cita,
+            descripcion_falla: fila.descripcion_falla,
+            estado: fila.estado,
+            confirmada_mecanico: Boolean(fila.confirmada_mecanico),
+            fecha_confirmacion_mecanico: fila.fecha_confirmacion_mecanico,
+            taller: { id: fila.taller_id, nombre: fila.taller_nombre },
+            cliente: { id: fila.cliente_id, nombre: fila.cliente_nombre },
+            vehiculo: { id: fila.vehiculo_id, marca: fila.marca, modelo: fila.modelo, placas: fila.placas }
+        }));
+        return res.json(citas);
+    } catch (error) {
+        console.error('Error al obtener citas del mecanico:', error);
+        return res.status(500).json({ mensaje: 'Error al obtener las citas del mecanico' });
+    }
+};
+
+exports.confirmarCitaMecanico = async (req, res) => {
+    const citaId = Number(req.params.id);
+    const mecanicoId = req.usuario.id;
+    if (!Number.isInteger(citaId) || citaId <= 0) {
+        return res.status(400).json({ mensaje: 'Cita no valida' });
+    }
+
+    let connection;
+    let transaccionIniciada = false;
+    try {
+        connection = await db.promise().getConnection();
+        const [referencias] = await connection.query(
+            'SELECT taller_id FROM citas WHERE id = ? AND mecanico_id = ?',
+            [citaId, mecanicoId]
+        );
+        if (referencias.length === 0) return res.status(404).json({ mensaje: 'Cita no encontrada' });
+
+        await connection.beginTransaction();
+        transaccionIniciada = true;
+        const tallerId = referencias[0].taller_id;
+        const [talleres] = await connection.query(
+            'SELECT id FROM talleres WHERE id = ? FOR UPDATE', [tallerId]
+        );
+        if (talleres.length === 0) throw crearErrorHttp(404, 'Cita no encontrada');
+
+        const [asociaciones] = await connection.query(
+            `SELECT mt.id FROM mecanicos_taller mt
+             INNER JOIN usuarios u ON u.id = mt.mecanico_id
+             WHERE mt.taller_id = ? AND mt.mecanico_id = ?
+               AND u.rol = 'mecanico' AND u.activo = 1 FOR UPDATE`,
+            [tallerId, mecanicoId]
+        );
+        if (asociaciones.length === 0) throw crearErrorHttp(404, 'Cita no encontrada');
+
+        const [citas] = await connection.query(
+            `SELECT id, mecanico_id, estado, confirmada_mecanico,
+                    fecha_confirmacion_mecanico
+             FROM citas WHERE id = ? AND taller_id = ? FOR UPDATE`,
+            [citaId, tallerId]
+        );
+        if (citas.length === 0 || Number(citas[0].mecanico_id) !== Number(mecanicoId)) {
+            throw crearErrorHttp(404, 'Cita no encontrada');
+        }
+        const cita = citas[0];
+        if (cita.estado !== 'aceptada') {
+            throw crearErrorHttp(409, 'La cita ya no admite confirmacion');
+        }
+
+        if (cita.confirmada_mecanico) {
+            await connection.commit();
+            transaccionIniciada = false;
+            return res.json({
+                mensaje: 'Cita confirmada correctamente',
+                cita: {
+                    id: cita.id,
+                    mecanico_id: mecanicoId,
+                    confirmada_mecanico: true,
+                    fecha_confirmacion_mecanico: cita.fecha_confirmacion_mecanico
+                }
+            });
+        }
+
+        await connection.query(
+            `UPDATE citas SET confirmada_mecanico = 1,
+                    fecha_confirmacion_mecanico = CURRENT_TIMESTAMP
+             WHERE id = ?`,
+            [citaId]
+        );
+        const [[confirmada]] = await connection.query(
+            'SELECT fecha_confirmacion_mecanico FROM citas WHERE id = ?', [citaId]
+        );
+        await connection.commit();
+        transaccionIniciada = false;
+        return res.json({
+            mensaje: 'Cita confirmada correctamente',
+            cita: {
+                id: citaId,
+                mecanico_id: mecanicoId,
+                confirmada_mecanico: true,
+                fecha_confirmacion_mecanico: confirmada.fecha_confirmacion_mecanico
+            }
+        });
+    } catch (error) {
+        if (connection && transaccionIniciada) {
+            try { await connection.rollback(); } catch (errorRollback) {
+                console.error('Error al revertir confirmacion de cita:', errorRollback);
+            }
+        }
+        if (error.status) return res.status(error.status).json({ mensaje: error.message });
+        console.error('Error al confirmar cita:', error);
+        return res.status(500).json({ mensaje: 'Error al confirmar la cita' });
+    } finally {
+        if (connection) connection.release();
     }
 };

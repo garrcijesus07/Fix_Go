@@ -9,15 +9,22 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminCategorias from "./pages/AdminCategorias";
 import ClienteDashboard from "./pages/ClienteDashboard";
 import MecanicoDashboard from "./pages/MecanicoDashboard";
 import TallerDashboard from "./pages/TallerDashboard";
+import HorariosTaller from "./pages/HorariosTaller";
+import RegistrarTaller from "./pages/RegistrarTaller";
+import MecanicosTaller from "./pages/MecanicosTaller";
+import HorariosMecanico from "./pages/HorariosMecanico";
+import CitasTaller from "./pages/CitasTaller";
 import PerfilTaller from "./pages/PerfilTaller";
 import MisVehiculos from "./pages/MisVehiculos";
 import NuevoVehiculo from "./pages/NuevoVehiculo";
 import PerfilCliente from "./pages/PerfilCliente";
 import Citas from "./pages/Citas";
 import AgendarCita from "./pages/AgendarCita";
+import "./styles/ModernPanels.css";
 
 function App() {
   return (
@@ -37,10 +44,19 @@ function App() {
 
         <Route element={<ProtectedRoute rolesPermitidos={["administrador"]} />}>
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/categorias" element={<AdminCategorias />} />
         </Route>
 
         <Route element={<ProtectedRoute rolesPermitidos={["taller"]} />}>
           <Route path="/taller" element={<TallerDashboard />} />
+          <Route path="/taller/horarios" element={<HorariosTaller />} />
+          <Route path="/taller/nuevo" element={<RegistrarTaller />} />
+          <Route path="/taller/mecanicos" element={<MecanicosTaller />} />
+          <Route path="/taller/citas" element={<CitasTaller />} />
+          <Route
+            path="/taller/:tallerId/mecanicos/:mecanicoId/horarios"
+            element={<HorariosMecanico />}
+          />
         </Route>
 
         <Route element={<ProtectedRoute rolesPermitidos={["mecanico"]} />}>

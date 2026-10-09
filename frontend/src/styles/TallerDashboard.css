@@ -1,0 +1,16 @@
+.taller-dashboard-container { background: var(--background); min-height: calc(100vh - 72px); padding-bottom: 60px; }
+.taller-dashboard-hero { align-items: center; background: linear-gradient(135deg, var(--primary-dark), var(--primary)); border-radius: 0 0 32px 32px; color: white; display: flex; justify-content: space-between; margin: auto; max-width: 1380px; padding: 50px max(28px, calc((100% - var(--content-width))/2)); }
+.taller-dashboard-hero p, .taller-dashboard-contenido header p { color: var(--secondary); font-size: 12px; font-weight: 800; letter-spacing: .1em; margin: 0 0 7px; text-transform: uppercase; }
+.taller-dashboard-hero h1 { font-size: clamp(32px, 4vw, 48px); letter-spacing: -.04em; line-height: 1.05; margin: 0 0 12px; }
+.taller-dashboard-hero span { color: rgba(255,255,255,.72); }
+.taller-dashboard-emblema { align-items: center; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); border-radius: 28px; display: flex; font-size: 32px; font-weight: 850; height: 120px; justify-content: center; width: 120px; }
+.taller-dashboard-contenido { margin: auto; max-width: var(--content-width); padding: 36px 24px 0; }
+.taller-dashboard-contenido h2 { font-size: 27px; letter-spacing: -.025em; margin: 0; }
+.taller-dashboard-acciones { display: grid; gap: 18px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 22px; }
+.taller-dashboard-acciones a { align-items: center; background: white; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); color: inherit; display: grid; gap: 16px; grid-template-columns: auto 1fr auto; padding: 24px; text-decoration: none; transition: .2s ease; }
+.taller-dashboard-acciones a:hover { border-color: #c9d9ed; box-shadow: var(--shadow); transform: translateY(-3px); }
+.taller-dashboard-icono { align-items: center; background: var(--primary-soft); border-radius: 16px; color: var(--primary); display: flex; font-size: 25px; height: 55px; justify-content: center; width: 55px; }
+.taller-dashboard-acciones h3 { color: var(--text); font-size: 19px; margin: 0 0 5px; }
+.taller-dashboard-acciones p { color: var(--text-soft); font-size: 14px; margin: 0; }
+.taller-dashboard-acciones strong { color: var(--primary); font-size: 28px; }
+@media (max-width: 700px) { .taller-dashboard-container { min-height: 100vh; } .taller-dashboard-hero { border-radius: 0 0 24px 24px; padding: 38px 20px; } .taller-dashboard-emblema { display: none; } .taller-dashboard-contenido { padding: 28px 16px 0; } .taller-dashboard-acciones { grid-template-columns: 1fr; } .taller-dashboard-acciones a { padding: 19px; } }

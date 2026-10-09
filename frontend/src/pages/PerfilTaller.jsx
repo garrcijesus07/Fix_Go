@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import Navbar from "../components/Navbar";
 import "../styles/PerfilTaller.css";
 
 function PerfilTaller() {
@@ -46,7 +47,7 @@ function PerfilTaller() {
 
     return (
 
-        <div className="perfil-taller-container">
+        <><Navbar /><div className="perfil-taller-container">
 
             <div className="taller-banner">
 
@@ -57,6 +58,12 @@ function PerfilTaller() {
             </div>
 
             <div className="taller-card">
+
+                <div className="perfil-taller-categorias">
+                    {(taller.categorias || []).map((categoria) => (
+                        <span key={categoria.id}>{categoria.nombre}</span>
+                    ))}
+                </div>
 
                 <p>
                     <span className="info-label">
@@ -111,7 +118,7 @@ function PerfilTaller() {
 
             </div>
 
-        </div>
+        </div></>
 
     );
 

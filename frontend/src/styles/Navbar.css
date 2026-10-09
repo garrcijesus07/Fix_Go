@@ -1,12 +1,22 @@
-.logout-btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    background: #e74c3c;
-    color: white;
-    cursor: pointer;
-}
-
-.logout-btn:hover {
-    background: #c0392b;
+.app-navbar { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; position: sticky; top: 0; z-index: 50; }
+.app-navbar-inner { align-items: center; display: flex; gap: 28px; margin: auto; max-width: var(--content-width); min-height: 72px; padding: 10px 24px; }
+.app-brand { align-items: center; color: white; display: flex; font-size: 21px; font-weight: 800; gap: 10px; letter-spacing: -.03em; text-decoration: none; white-space: nowrap; }
+.app-brand strong { color: #42dfa0; }
+.app-brand-mark { align-items: center; background: white; border-radius: 10px; color: var(--primary); display: inline-flex; font-size: 11px; height: 34px; justify-content: center; letter-spacing: 0; width: 34px; }
+.app-nav-links { align-items: center; display: flex; gap: 5px; margin-left: auto; }
+.app-nav-links a, .logout-btn { align-items: center; border-radius: 11px; display: inline-flex; font-size: 14px; font-weight: 650; gap: 7px; padding: 10px 12px; }
+.app-nav-links a { color: rgba(255,255,255,.78); text-decoration: none; }
+.app-nav-links a:hover, .app-nav-links a.activo { background: rgba(255,255,255,.12); color: white; }
+.logout-btn { background: transparent; border: 1px solid rgba(255,255,255,.25); color: white; cursor: pointer; margin-left: 4px; }
+.logout-btn:hover { background: rgba(255,255,255,.12); }
+@media (max-width: 700px) {
+    .app-navbar { bottom: 0; box-shadow: 0 -8px 25px rgba(7,43,87,.12); position: fixed; top: auto; width: 100%; }
+    .app-navbar-inner { background: white; gap: 0; min-height: 68px; padding: 6px 10px max(6px, env(safe-area-inset-bottom)); }
+    .app-brand { display: none; }
+    .app-nav-links { justify-content: space-around; margin: 0; width: 100%; }
+    .app-nav-links a, .logout-btn { color: var(--text-soft); flex-direction: column; font-size: 10px; gap: 1px; min-width: 55px; padding: 5px 4px; }
+    .app-nav-links a span:first-child, .logout-btn span:first-child { font-size: 20px; line-height: 1.1; }
+    .app-nav-links a:hover, .app-nav-links a.activo { background: var(--primary-soft); color: var(--primary); }
+    .logout-btn { border: 0; margin: 0; }
+    body { padding-bottom: 68px; }
 }
